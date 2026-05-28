@@ -23,63 +23,6 @@ Modular backend API architecture using FastAPI
 
 Cloud‑native deployment with containerisation
 
-🧱 Tech Stack
-Frontend
-JavaScript
-
-HTML5
-
-CSS3
-
-Responsive UI components
-
-Interactive resume upload dashboard
-
-Backend
-Python
-
-FastAPI — API framework
-
-Uvicorn — ASGI server
-
-Requests — HTTP client
-
-
-PDF ingestion pipeline using PyPDF2
-
-Modular architecture (api/, ingestion/, services/)
-Custom ingestion pipeline for PDF parsing and preprocessing
-AI & NLP
-OpenAI API / LLM Models
-
-Pinecone Vector Database
-
-Semantic embeddings & NLP pipelines
-
-Job‑description similarity scoring
-
-AI‑generated optimisation suggestions
-
-Infrastructure & Deployment
-Docker — containerisation
-
-Kubernetes — orchestration
-
-Containerised microservice deployment
-
-Cloud‑ready architecture
-
-🎯 Project Objective
-A platform designed to support candidates pursuing roles in:
-
-Cloud Engineering
-
-DevOps
-
-Cybersecurity
-
-Software Engineering
-
-Data & AI
-
-Product & Technical Consulting
+System Overview
+This project is a full-stack AI CV optimisation system using FastAPI, OpenAI embeddings, and Pinecone for semantic search.
+<img width="3219" height="2731" alt="mermaid-diagram" src="https://github.com/user-attachments/assets/c437d4d2-04ab-4050-86d1-6ef9c58c8b53" />
