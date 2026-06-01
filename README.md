@@ -1,86 +1,71 @@
-AI‑Powered CV Reviewer & Resume Optimization Platform
-An AI‑driven Resume & CV Reviewer platform designed to automate resume analysis, ATS scoring, and AI‑powered career recommendations for technology‑focused roles.
-Built during Summer 2026, the system leverages modern backend architecture, semantic search, and Large Language Models (LLMs) to deliver tailored, actionable feedback for candidates in software engineering, data, cloud, AI, cybersecurity, and related tech domains.
+AI-Powered CV Reviewer & Resume Optimisation Platform
 
-✨ Features
-AI‑powered CV analysis & scoring
+An AI-driven resume intelligence system that automates CV parsing, ATS evaluation, and semantic job matching to generate structured, actionable career feedback for candidates in software engineering, data science, cloud engineering, AI, and cybersecurity domains.
 
-ATS (Applicant Tracking System) compatibility review
+Built as a modular backend system (Summer 2026), the platform combines LLMs, vector embeddings, and document ingestion pipelines to transform unstructured CVs into structured skill profiles and compute similarity against live job descriptions.
 
-AI‑generated resume improvement suggestions
+🧠 System Capabilities
+Automated CV ingestion and structured text extraction (PDF parsing pipeline)
+ATS compatibility scoring based on keyword + structural heuristics
+LLM-driven resume improvement and rewriting suggestions
+Semantic skill extraction using embedding-based representation learning
+Job description similarity matching via vector search
+Skill-gap analysis against target roles in tech domains
+Real-time optimisation recommendations powered by LLM inference
+Job market keyword trend extraction via scraping pipeline
 
-Technology‑industry keyword optimisation
+## 🧱 System Tech Stack Overview
+---
 
-Skill‑gap detection for tech roles
+### 🎨 Frontend Layer
+- JavaScript  
+- HTML5 / CSS3  
+- Responsive Resume Dashboard  
 
-Resume enhancement recommendations
+![Frontend Stack](https://img.shields.io/badge/Frontend-JavaScript%20%7C%20HTML5%20%7C%20CSS3-ff69b4?style=for-the-badge)
 
-Semantic matching against job descriptions
+---
 
-Real‑time scraping of tech hiring trends
+### ⚙️ Backend Layer (FastAPI Microservice)
+- Python  
+- FastAPI API Layer  
+- Uvicorn ASGI Server  
+- Requests HTTP Client  
 
-Modular backend API architecture using FastAPI
+![Backend Stack](https://img.shields.io/badge/Backend-FastAPI%20%7C%20Python-00C7B7?style=for-the-badge)
 
-Cloud‑native deployment with containerisation
+---
 
-🧱 Tech Stack
-Frontend
-JavaScript
+### 📄 PDF Ingestion Pipeline
+- PyPDF2 parsing  
+- Preprocessing module  
+- Structured CV extraction  
 
-HTML5
+![Pipeline](https://img.shields.io/badge/PDF%20Pipeline-PyPDF2%20%7C%20Parsing%20%7C%20ETL-orange?style=for-the-badge)
 
-CSS3
+---
 
-Responsive UI components
+### 🧠 AI & NLP Layer
+- OpenAI / LLM APIs  
+- Embedding generation  
+- Semantic similarity scoring  
+- CV optimisation engine  
 
-Interactive resume upload dashboard
+![AI Layer](https://img.shields.io/badge/AI-OpenAI%20%7C%20Embeddings%20%7C%20NLP-purple?style=for-the-badge)
 
-Backend
-Python
+---
 
-FastAPI — API framework
+### 🗄️ Vector Database
+- Pinecone vector DB  
+- Semantic search & retrieval  
 
-Uvicorn — ASGI server
+![Vector DB](https://img.shields.io/badge/Vector%20DB-Pinecone-blue?style=for-the-badge)
 
-Requests — HTTP client
+---
 
-BeautifulSoup4 — web scraping
+### 🚀 Infrastructure
+- Docker containerisation  
+- Kubernetes orchestration  
+- Microservice deployment  
 
-PDF ingestion pipeline using PyPDF2
-
-Modular architecture (api/, ingestion/, services/)
-
-AI & NLP
-OpenAI API / LLM Models
-
-Pinecone Vector Database
-
-Semantic embeddings & NLP pipelines
-
-Job‑description similarity scoring
-
-AI‑generated optimisation suggestions
-
-Infrastructure & Deployment
-Docker — containerisation
-
-Kubernetes — orchestration
-
-Containerised microservice deployment
-
-Cloud‑ready architecture
-
-🎯 Project Objective
-A platform designed to support candidates pursuing roles in:
-
-Cloud Engineering
-
-DevOps
-
-Cybersecurity
-
-Software Engineering
-
-Data & AI
-
-Product & Technical Consulting
+![Infra](https://img.shields.io/badge/Infra-Docker%20%7C%20Kubernetes-black?style=for-the-badge)
