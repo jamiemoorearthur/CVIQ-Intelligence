@@ -30,10 +30,10 @@ jobs:
           pip install bandit
           bandit -r backend/app -ll
 
-      - name: Run Safety vulnerability scan
+      - name: Run pip-audit vulnerability scan
         run: |
-          pip install safety
-          safety check -r backend/requirements.txt
+          pip install pip-audit
+          pip-audit -r backend/requirements.txt
 
       - name: Build Docker image
         run: docker build -t cv-reviewer:${{ github.sha }} ./backend
