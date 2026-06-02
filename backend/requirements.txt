@@ -1,12 +1,12 @@
 fastapi==0.115.6
 uvicorn[standard]==0.32.1
-python-multipart==0.0.19
-python-dotenv==1.0.1
+python-multipart==0.0.26
+python-dotenv==1.2.2
 pydantic==2.10.4
 pydantic-settings==2.7.0
 
-# PDF parsing
-PyPDF2==3.0.1
+# PDF parsing — pypdf is the maintained successor to deprecated PyPDF2
+pypdf==5.4.0
 
 # OpenAI
 openai==1.59.6
@@ -15,6 +15,5 @@ openai==1.59.6
 chromadb==0.6.3
 
 # Testing
-pytest==8.3.4
-pytest-asyncio==0.25.2
+pytest==9.0.3
 httpx==0.28.1

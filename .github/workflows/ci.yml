@@ -24,3 +24,13 @@ jobs:
         run: pytest backend/tests/ -v
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+      - name: Run Bandit security scan
+        run: |
+          pip install bandit
+          bandit -r backend/app -ll
+
+      - name: Run Safety vulnerability scan
+        run: |
+          pip install safety
+          safety check -r backend/requirements.txt

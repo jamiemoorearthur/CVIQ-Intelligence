@@ -1,8 +1,8 @@
-import PyPDF2
+from pypdf import PdfReader
 from io import BytesIO
 
 def extract_text_from_pdf(file_bytes: bytes) -> str:
-    pdf_reader = PyPDF2.PdfReader(BytesIO(file_bytes))
+    pdf_reader = PdfReader(BytesIO(file_bytes))
     text = ""
 
     for page in pdf_reader.pages:
