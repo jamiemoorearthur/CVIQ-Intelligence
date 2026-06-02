@@ -34,3 +34,14 @@ jobs:
         run: |
           pip install safety
           safety check -r backend/requirements.txt
+
+      - name: Build Docker image
+        run: docker build -t cv-reviewer:${{ github.sha }} ./backend
+
+      - name: Run Trivy image scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: cv-reviewer:${{ github.sha }}
+          format: table
+          exit-code: 1
+          severity: CRITICAL,HIGH
