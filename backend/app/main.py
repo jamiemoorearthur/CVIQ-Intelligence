@@ -2,8 +2,10 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import health, review, upload
+from app.core.config import settings
 from app.ingestion.chunker import chunk_text
 from app.embeddings.embedder import embed_texts
 from app.vectorstore.chroma import get_collection, add_documents
@@ -49,6 +51,13 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="CV Reviewer API", lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.cors_origins,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(health.router)
 app.include_router(upload.router)
