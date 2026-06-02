@@ -1,9 +1,10 @@
 fastapi==0.115.6
 uvicorn[standard]==0.32.1
-python-multipart==0.0.26
+python-multipart==0.0.27
 python-dotenv==1.2.2
 pydantic==2.10.4
 pydantic-settings==2.7.0
+setuptools>=80.0.0
 
 # PDF parsing — pypdf is the maintained successor to deprecated PyPDF2
 pypdf==6.10.2
