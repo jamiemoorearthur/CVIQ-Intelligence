@@ -6,7 +6,7 @@ pydantic==2.10.4
 pydantic-settings==2.7.0
 
 # PDF parsing — pypdf is the maintained successor to deprecated PyPDF2
-pypdf==5.4.0
+pypdf==6.10.2
 
 # OpenAI
 openai==1.59.6
