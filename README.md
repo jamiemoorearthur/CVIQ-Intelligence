@@ -249,4 +249,4 @@ Built by [Seyi Bello](https://github.com/seyiabello) and [Jamie Moore-Arthur](ht
 
 - Seyi: AI/application layer (RAG pipeline, review logic, API endpoints, frontend UI, infrastructure)
 - Jamie: Data engineering layer (ingestion pipeline, embeddings, vector store, file upload)
-- Rochelle: Front-end/UX & UI (React, JavaScript, TypeScript)
+- Rochelle: Front-end/UX & UI (React, JavaScript, TypeScript, Website Design)
