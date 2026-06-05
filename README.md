@@ -74,6 +74,8 @@ CV (PDF)  +  Job Description (text)
   React Frontend (scores, keywords, strengths, bullet rewrites)
 ```
 
+![RAG Architecture](images/ragarch.PNG)
+
 **Knowledge base sources loaded into ChromaDB at startup:**
 - CV review rubric (7 scoring categories with weighted criteria)
 - ATS guidelines (keyword strategy, formatting rules, score thresholds)
