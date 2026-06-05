@@ -136,30 +136,8 @@ FastAPI Backend (Render)
       v
 JSON response back to frontend
 ```
-<mxGraphModel dx="1000" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" adaptiveColors="auto">
-    <root>
-      <mxCell id="0" />
-      <mxCell id="1" parent="0" />
-      <mxCell id="infra" value="Backend Infrastructure" style="swimlane;startSize=30;fillColor=#f5f5f5;strokeColor=#666666;html=1;fontStyle=1;startSize=24;" vertex="1" parent="1">
-        <mxGeometry x="220" y="40" width="360" height="180" as="geometry" />
-      </mxCell>
-      <mxCell id="api" value="&lt;b&gt;API Service&lt;/b&gt;&lt;br&gt;Backend Controller" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="infra">
-        <mxGeometry x="30" y="60" width="120" height="60" as="geometry" />
-      </mxCell>
-      <mxCell id="chromadb" value="&lt;b&gt;ChromaDB&lt;/b&gt;&lt;br&gt;(Relational &amp;amp;&lt;br&gt;Vector Store)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="infra">
-        <mxGeometry x="210" y="50" width="110" height="80" as="geometry" />
-      </mxCell>
-      <mxCell id="client" value="&lt;b&gt;Client Application&lt;/b&gt;&lt;br&gt;Web / Mobile" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
-        <mxGeometry x="40" y="100" width="130" height="60" as="geometry" />
-      </mxCell>
-      <mxCell id="edge1" value="API Calls" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;" edge="1" source="client" target="api" parent="1">
-        <mxGeometry relative="1" as="geometry" />
-      </mxCell>
-      <mxCell id="edge2" value="Relational Queries" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;" edge="1" source="api" target="chromadb" parent="1">
-        <mxGeometry relative="1" as="geometry" />
-      </mxCell>
-    </root>
-  </mxGraphModel>
+<img width="580" height="206" alt="image" src="https://github.com/user-attachments/assets/e5512de3-5cbf-4bc9-b0aa-4334a80a2ac1" />
+
 The frontend and backend are deployed independently. The React app on Vercel calls the FastAPI backend on Render directly from the browser. CORS is configured on the backend to allow requests from the Vercel domain.
 
 ---
