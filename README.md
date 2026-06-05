@@ -5,19 +5,22 @@ An AI-powered CV review platform that analyses your resume against a real job de
 [![CI](https://github.com/jamiemoorearthur/Resume-Review-Engine/actions/workflows/ci.yml/badge.svg)](https://github.com/jamiemoorearthur/Resume-Review-Engine/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=flat&logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.136-009688?style=flat&logo=fastapi&logoColor=white)
+![React](https://img.shields.io/badge/React-18-61DAFB?style=flat&logo=react&logoColor=white)
 ![OpenAI](https://img.shields.io/badge/OpenAI-GPT--4o-412991?style=flat&logo=openai&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Containerised-2496ED?style=flat&logo=docker&logoColor=white)
-![Render](https://img.shields.io/badge/Deployed-Render-46E3B7?style=flat&logo=render&logoColor=white)
+![Vercel](https://img.shields.io/badge/Frontend-Vercel-000000?style=flat&logo=vercel&logoColor=white)
+![Render](https://img.shields.io/badge/Backend-Render-46E3B7?style=flat&logo=render&logoColor=white)
 
 ---
 
-## Live API
+## Live
 
-The backend is live and publicly accessible. You can test the review endpoint directly from the browser using the interactive docs:
+| | URL |
+|---|---|
+| **Frontend** | [project-splj5.vercel.app](https://project-splj5.vercel.app) |
+| **Backend API** | [cv-reviewer-api.onrender.com/docs](https://cv-reviewer-api.onrender.com/docs) |
 
-**[Try the API on Render](https://cv-reviewer-api.onrender.com/docs#/default/review_cv_review_post)**
-
-> Note: The free tier spins down after 15 minutes of inactivity. The first request may take 30 seconds to wake up.
+> Note: The backend runs on Render's free tier and spins down after 15 minutes of inactivity. The first request may take 30 seconds to wake up.
 
 ---
 
@@ -66,6 +69,9 @@ CV (PDF)  +  Job Description (text)
         |
         v
   Structured JSON Review
+        |
+        v
+  React Frontend (scores, keywords, strengths, bullet rewrites)
 ```
 
 **Knowledge base sources loaded into ChromaDB at startup:**
@@ -77,6 +83,16 @@ CV (PDF)  +  Job Description (text)
 ---
 
 ## Tech stack
+
+### Frontend
+| Technology | Purpose |
+|---|---|
+| [React 18](https://react.dev/) | UI framework |
+| [Vite](https://vitejs.dev/) | Build tool and dev server |
+| [React Router](https://reactrouter.com/) | Client-side routing |
+| [Axios](https://axios-http.com/) | API requests |
+| [React Dropzone](https://react-dropzone.js.org/) | Drag and drop file upload |
+| [Vercel](https://vercel.com/) | Frontend hosting |
 
 ### Backend
 | Technology | Purpose |
@@ -98,8 +114,31 @@ CV (PDF)  +  Job Description (text)
 | Technology | Purpose |
 |---|---|
 | [Docker](https://www.docker.com/) | Containerisation |
-| [Render](https://render.com/) | Cloud deployment |
+| [Render](https://render.com/) | Backend cloud deployment |
+| [Vercel](https://vercel.com/) | Frontend cloud deployment |
 | [GitHub Actions](https://github.com/features/actions) | CI/CD |
+
+---
+
+## Architecture
+
+```
+Browser (Vercel)
+      |
+      | HTTPS POST /review (multipart/form-data)
+      v
+FastAPI Backend (Render)
+      |
+      |-- pypdf extracts CV text
+      |-- ChromaDB retrieves relevant knowledge base chunks
+      |-- GPT-4o-mini generates structured review
+      |
+      v
+JSON response back to frontend
+```
+<img width="580" height="206" alt="image" src="https://github.com/user-attachments/assets/e5512de3-5cbf-4bc9-b0aa-4334a80a2ac1" />
+
+The frontend and backend are deployed independently. The React app on Vercel calls the FastAPI backend on Render directly from the browser. CORS is configured on the backend to allow requests from the Vercel domain.
 
 ---
 
@@ -156,29 +195,34 @@ Full interactive documentation at: [https://cv-reviewer-api.onrender.com/docs](h
 
 ## Running locally
 
-**Requirements:** Python 3.11, an OpenAI API key
+**Requirements:** Python 3.11, Node.js 18+, an OpenAI API key
+
+### Backend
 
 ```bash
-# Clone the repo
 git clone https://github.com/jamiemoorearthur/Resume-Review-Engine.git
 cd Resume-Review-Engine/backend
 
-# Create and activate a virtual environment
 python -m venv .venv
 source .venv/Scripts/activate  # Windows
 # or: source .venv/bin/activate  # Mac/Linux
 
-# Install dependencies
 pip install -r requirements.txt
-
-# Add your OpenAI key
 echo "OPENAI_API_KEY=sk-your-key-here" > .env
-
-# Start the server
 uvicorn app.main:app --reload
 ```
 
-The API will be available at `http://localhost:8000`. The knowledge base loads into ChromaDB on first startup (takes a few seconds and makes ~49 embedding API calls).
+Backend available at `http://localhost:8000`.
+
+### Frontend
+
+```bash
+cd Resume-Review-Engine/frontend
+npm install
+npm run dev
+```
+
+Frontend available at `http://localhost:5173`.
 
 **Running with Docker:**
 ```bash
@@ -212,8 +256,15 @@ Resume-Review-Engine/
 │   ├── tests/              # pytest test suite (19 tests)
 │   ├── Dockerfile
 │   └── requirements.txt
-├── frontend/               # React + TypeScript (in progress)
-├── terraform/              # Azure infrastructure (coming soon)
+├── frontend/
+│   ├── src/
+│   │   ├── api/            # Axios API client
+│   │   ├── components/     # ScoreCards, KeywordList, BulletRewrites, ResultPanel
+│   │   ├── pages/          # Home, Upload, Results
+│   │   └── styles/         # CSS per page
+│   ├── index.html
+│   └── package.json
+├── terraform/              # Azure infrastructure as code (planned)
 ├── docker-compose.yml
 └── .github/workflows/ci.yml
 ```
@@ -222,31 +273,18 @@ Resume-Review-Engine/
 
 ## Roadmap
 
-### Frontend (in progress)
-A React and TypeScript frontend is being built to give this a proper UI. The interface will include:
-- CV file upload with drag-and-drop
-- Job description input box
-- Score cards with visual breakdowns
-- Keyword gap analysis panel
-- Before/after bullet rewrite display
-
-### Terraform + Azure deployment (coming soon)
-The backend currently runs on Render. The next infrastructure step is a full Azure deployment managed with Terraform:
-- Azure Container Registry to host the Docker image
-- Azure Container App for the backend service (auto-scaling, zero-downtime deploys)
-- Azure Key Vault for secrets management
-- Azure File Share for ChromaDB persistence
-- `tfsec` / Trivy IaC scanning added to the CI pipeline
-
 ### Kubernetes (planned)
 Once the Azure deployment is stable, the system will be migrated to Kubernetes for production-grade orchestration. This includes horizontal pod autoscaling, rolling updates, and a proper ingress controller with rate limiting.
+
+### Terraform + Azure (planned)
+Full Azure deployment managed with Terraform: Azure Container Registry, Azure Container App, Azure Key Vault for secrets, and Azure File Share for ChromaDB persistence.
 
 ---
 
 ## Team
 
-Built by [Seyi Bello](https://github.com/seyiabello) and [Jamie Moore-Arthur](https://github.com/jamiemoorearthur) and [Rochelle Smith](https://github.com/rochellejjsmith)
+Built by [Seyi Bello](https://github.com/seyiabello), [Jamie Moore-Arthur](https://github.com/jamiemoorearthur), and [Rochelle Smith](https://github.com/rochellejjsmith).
 
-- Seyi: AI/application layer (RAG pipeline, review logic, API endpoints, frontend UI, infrastructure)
-- Jamie: Data engineering layer (ingestion pipeline, embeddings, vector store, file upload, Knowledge Base)
-- Rochelle: Front-end/UX & UI (React, JavaScript, TypeScript, Website Design)
+- Seyi: AI/application layer (RAG pipeline, embeddings, vector store, review logic, API endpoints, infrastructure, CI/CD, security)
+- Jamie: Knowledge base content, ingestion pipeline, file upload, FastAPI contributions
+- [Rochelle Smith](https://github.com/rochellejjsmith): Frontend (React UI, component design, upload flow, results display, Vercel deployment)
