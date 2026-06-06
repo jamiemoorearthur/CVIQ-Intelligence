@@ -14,11 +14,16 @@ def generate_review(cv_text: str, job_description: str, context_chunks: list[str
         {"role": "user", "content": user_prompt},
     ]
 
-    generation = trace.generation(
-        name="gpt-review",
-        model=settings.openai_model,
-        input=messages,
-    ) if trace else None
+    generation = None
+    try:
+        if trace:
+            generation = trace.generation(
+                name="gpt-review",
+                model=settings.openai_model,
+                input=messages,
+            )
+    except Exception:
+        generation = None
 
     try:
         response = client.chat.completions.create(
@@ -28,19 +33,25 @@ def generate_review(cv_text: str, job_description: str, context_chunks: list[str
             response_format={"type": "json_object"},
         )
     except Exception as e:
-        if generation:
-            generation.end(level="ERROR", status_message=str(e))
+        try:
+            if generation:
+                generation.end(level="ERROR", status_message=str(e))
+        except Exception:
+            pass
         raise LLMError(f"GPT call failed: {e}") from e
 
-    if generation:
-        generation.end(
-            output=response.choices[0].message.content,
-            usage={
-                "prompt_tokens": response.usage.prompt_tokens,
-                "completion_tokens": response.usage.completion_tokens,
-                "total_tokens": response.usage.total_tokens,
-            },
-        )
+    try:
+        if generation:
+            generation.end(
+                output=response.choices[0].message.content,
+                usage={
+                    "prompt_tokens": response.usage.prompt_tokens,
+                    "completion_tokens": response.usage.completion_tokens,
+                    "total_tokens": response.usage.total_tokens,
+                },
+            )
+    except Exception:
+        pass
 
     raw = response.choices[0].message.content
     try:
