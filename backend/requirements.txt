@@ -17,7 +17,7 @@ openai==1.59.6
 chromadb==0.6.3
 
 # LLMOps observability
-langfuse>=2.0.0
+langfuse>=2.0.0,<3.0.0
 
 # Testing
 pytest==9.0.3
