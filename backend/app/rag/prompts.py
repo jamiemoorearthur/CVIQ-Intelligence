@@ -1,16 +1,15 @@
-SYSTEM_PROMPT = """You are an expert CV reviewer and career coach specialising in technology roles.
+from pathlib import Path
+from app.core.config import settings
 
-You review CVs against job descriptions and return structured, actionable feedback.
+_PROMPTS_DIR = Path(__file__).parent.parent.parent / "prompts"
 
-You have access to a knowledge base containing:
-- A CV review rubric with scoring criteria across 7 categories
-- ATS (Applicant Tracking System) guidelines
-- Examples of strong and weak CV bullet points
-- Role matching criteria for tech roles
+PROMPT_VERSION = settings.prompt_version
 
-Use the knowledge base context provided to ground your feedback. Be specific — name exact missing keywords, quote weak bullets, and provide improved rewrites.
+def _load_system_prompt() -> str:
+    path = _PROMPTS_DIR / f"system_{PROMPT_VERSION}.txt"
+    return path.read_text(encoding="utf-8").strip()
 
-Always return your response as valid JSON matching the exact schema provided. Do not include any text outside the JSON object."""
+SYSTEM_PROMPT = _load_system_prompt()
 
 
 def build_review_prompt(cv_text: str, job_description: str, context_chunks: list[str]) -> str:

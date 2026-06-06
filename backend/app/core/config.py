@@ -8,6 +8,8 @@ class Settings(BaseSettings):
     app_env: str = "development"
     cors_origins: list[str] = ["http://localhost:5173", "http://localhost:3000"]
 
+    prompt_version: str = "v1.0.0"
+
     langfuse_public_key: str = ""
     langfuse_secret_key: str = ""
     langfuse_host: str = "https://cloud.langfuse.com"

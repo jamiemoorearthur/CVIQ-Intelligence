@@ -23,9 +23,14 @@ def run_review_pipeline(cv_text: str, job_description: str) -> dict:
     trace = None
     try:
         if _langfuse:
+            from app.rag.prompts import PROMPT_VERSION
             trace = _langfuse.trace(
                 name="cv-review",
-                metadata={"cv_chars": len(cv_text), "jd_chars": len(job_description)},
+                metadata={
+                    "cv_chars": len(cv_text),
+                    "jd_chars": len(job_description),
+                    "prompt_version": PROMPT_VERSION,
+                },
             )
     except Exception as e:
         logger.warning(f"Langfuse trace failed: {e}")
