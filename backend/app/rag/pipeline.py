@@ -1,6 +1,9 @@
+import logging
 from app.core.config import settings
 from app.rag.retriever import retrieve_context
 from app.rag.generator import generate_review
+
+logger = logging.getLogger(__name__)
 
 _langfuse = None
 
@@ -12,8 +15,11 @@ try:
             secret_key=settings.langfuse_secret_key,
             host=settings.langfuse_host,
         )
-except Exception:
-    pass
+        logger.info("Langfuse initialised successfully")
+    else:
+        logger.info("Langfuse skipped: no public key configured")
+except Exception as e:
+    logger.warning(f"Langfuse init failed: {e}")
 
 
 def run_review_pipeline(cv_text: str, job_description: str) -> dict:
@@ -24,7 +30,8 @@ def run_review_pipeline(cv_text: str, job_description: str) -> dict:
                 name="cv-review",
                 metadata={"cv_chars": len(cv_text), "jd_chars": len(job_description)},
             )
-    except Exception:
+    except Exception as e:
+        logger.warning(f"Langfuse trace creation failed: {e}")
         trace = None
 
     query = f"{cv_text[:1000]}\n\n{job_description[:500]}"
@@ -34,7 +41,7 @@ def run_review_pipeline(cv_text: str, job_description: str) -> dict:
     try:
         if trace:
             trace.update(output={"overall_score": result.get("overall_score")})
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning(f"Langfuse trace update failed: {e}")
 
     return result
