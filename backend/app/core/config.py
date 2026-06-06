@@ -8,6 +8,10 @@ class Settings(BaseSettings):
     app_env: str = "development"
     cors_origins: list[str] = ["http://localhost:5173", "http://localhost:3000"]
 
+    langfuse_public_key: str = ""
+    langfuse_secret_key: str = ""
+    langfuse_host: str = "https://cloud.langfuse.com"
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

@@ -16,6 +16,9 @@ openai==1.59.6
 # Vector store
 chromadb==0.6.3
 
+# LLMOps observability
+langfuse>=2.0.0
+
 # Testing
 pytest==9.0.3
 httpx2==2.3.0
