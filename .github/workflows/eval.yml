@@ -23,7 +23,7 @@ jobs:
       - name: Install eval dependencies
         run: |
           pip install -r backend/requirements-eval.txt
-          python -m spacy download en_core_web_sm
+          python -c "from spacy.cli import download; download('en_core_web_sm')"
 
       - name: Run RAG evaluation
         working-directory: backend
