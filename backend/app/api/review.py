@@ -39,15 +39,6 @@ try:
 except BaseException as e:
     print(f"[pii-gate] Presidio not available: {e}")
 
-# ── Guardrails AI output schema validation ───────────────────────────────────
-_output_guard = None
-try:
-    from guardrails import Guard
-    _output_guard = Guard.from_pydantic(output_class=ReviewResponse)
-    print("[guardrails-ai] output guard initialized")
-except BaseException as e:
-    print(f"[guardrails-ai] not available: {e}")
-
 
 def _check_prompt_injection(text: str, source: str) -> None:
     lower = text.lower()
@@ -78,22 +69,6 @@ def _detect_pii(text: str) -> None:
         pass
 
 
-def _guardrails_validate(review: dict) -> dict:
-    if not _output_guard:
-        return review
-    try:
-        import json
-        outcome = _output_guard.parse(json.dumps(review))
-        # 0.5+ returns ValidationOutcome; 0.4.x returns tuple
-        validated = getattr(outcome, "validated_output", None)
-        if validated is None and isinstance(outcome, tuple) and len(outcome) >= 2:
-            validated = outcome[1]
-        if validated:
-            return validated if isinstance(validated, dict) else review
-    except Exception as e:
-        print(f"[guardrail] gate=output reason=schema_violation detail={e}")
-    return review
-
 
 @router.post("/review", response_model=ReviewResponse)
 async def review_cv(
@@ -122,6 +97,5 @@ async def review_cv(
 
     # ── Output gate ───────────────────────────────────────────────────────────
     cleaned = validate_and_clean(raw_review)
-    cleaned = _guardrails_validate(cleaned)
 
     return cleaned
