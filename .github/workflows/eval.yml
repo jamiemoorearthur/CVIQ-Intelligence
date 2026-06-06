@@ -1,0 +1,26 @@
+name: RAG Evaluation
+
+on:
+  schedule:
+    - cron: '0 9 * * 1'  # every Monday at 9am UTC
+  workflow_dispatch:      # allow manual trigger from GitHub Actions UI
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install eval dependencies
+        run: pip install -r backend/requirements-eval.txt
+
+      - name: Run RAG evaluation
+        working-directory: backend
+        run: python tests/eval/run_eval.py
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
