@@ -3,7 +3,11 @@ name: RAG Evaluation
 on:
   schedule:
     - cron: '0 9 * * 1'  # every Monday at 9am UTC
-  workflow_dispatch:      # allow manual trigger from GitHub Actions UI
+  push:
+    paths:
+      - 'backend/prompts/**'        # any prompt file change
+      - 'backend/tests/eval/**'     # golden dataset or eval script change
+  workflow_dispatch:                # allow manual trigger from GitHub Actions UI
 
 jobs:
   evaluate:
@@ -17,10 +21,14 @@ jobs:
           python-version: "3.11"
 
       - name: Install eval dependencies
-        run: pip install -r backend/requirements-eval.txt
+        run: |
+          pip install -r backend/requirements-eval.txt
+          python -m spacy download en_core_web_sm
 
       - name: Run RAG evaluation
         working-directory: backend
         run: python tests/eval/run_eval.py
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          LANGFUSE_PUBLIC_KEY: ${{ secrets.LANGFUSE_PUBLIC_KEY }}
+          LANGFUSE_SECRET_KEY: ${{ secrets.LANGFUSE_SECRET_KEY }}
