@@ -5,6 +5,7 @@ Uses an in-memory ChromaDB collection with controlled embeddings to verify
 the retrieval pipeline returns the right results and applies the relevance
 threshold correctly. No OpenAI calls are made.
 """
+import uuid
 import chromadb
 import pytest
 from unittest.mock import patch
@@ -24,10 +25,15 @@ def _unit(index: int) -> list[float]:
 
 
 def _make_collection(chunks: list[str], embeddings: list[list[float]]) -> chromadb.Collection:
-    """Fresh in-memory ChromaDB collection with known chunks and embeddings."""
+    """Fresh in-memory ChromaDB collection with known chunks and embeddings.
+
+    Uses a unique collection name per call because EphemeralClient shares
+    in-memory state across the whole test process — reusing the same name
+    would cause ID conflicts between tests.
+    """
     client = chromadb.EphemeralClient()
     collection = client.get_or_create_collection(
-        name="test_kb",
+        name=f"test_{uuid.uuid4().hex}",
         metadata={"hnsw:space": "cosine"},
     )
     ids = [f"chunk_{i}" for i in range(len(chunks))]
