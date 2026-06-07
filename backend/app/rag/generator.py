@@ -12,6 +12,16 @@ _COST_PER_OUTPUT_TOKEN = 0.60 / 1_000_000
 _COST_ALERT_THRESHOLD_USD = 0.01   # alert if a single request exceeds 1 cent
 _LATENCY_ALERT_THRESHOLD_MS = 8_000  # alert if inference alone exceeds 8 s
 
+# Token budget: the review JSON (scores, keywords, bullets) uses ~220-260 tokens
+# in practice. 800 is a hard ceiling that prevents runaway output costs while
+# leaving enough headroom for verbose responses.
+_MAX_OUTPUT_TOKENS = 800
+
+# Caching note: OpenAI automatic prompt caching applies to prefixes >1024 tokens.
+# The system prompt alone is well under that, and every user prompt is unique
+# (different CV + JD each request), so no prompt prefix is ever reused.
+# Response caching is also inapplicable — each review is for a unique document.
+
 _HALLUCINATION_MARKERS = [
     "as an ai",
     "i cannot",
@@ -58,6 +68,7 @@ def generate_review(cv_text: str, job_description: str, context_chunks: list[str
             messages=messages,
             temperature=0.2,
             response_format={"type": "json_object"},
+            max_tokens=_MAX_OUTPUT_TOKENS,
         )
     except Exception as e:
         try:
