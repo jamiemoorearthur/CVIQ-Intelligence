@@ -2,10 +2,18 @@
 RAG evaluation using Ragas.
 
 Measures:
-- faithfulness:        are review claims grounded in the retrieved knowledge base chunks?
 - answer_relevancy:    does the review address what was asked?
-- context_precision:   are the retrieved chunks relevant to the ground truth answer?
-- context_recall:      does the retrieved context cover the ground truth answer?
+- context_precision:   are the retrieved rubric chunks relevant to the query?
+
+Metrics NOT used and why:
+- faithfulness:     requires answer claims to be attributable to retrieved context.
+                    This system uses the knowledge base as a scoring rubric, not as
+                    a factual source — review claims ("candidate has FastAPI experience")
+                    are derived from the CV/JD, not from rubric text. Score is
+                    structurally near 0 regardless of quality.
+- context_recall:   requires ground_truth to describe what the context should contain.
+                    Our ground_truth describes the expected review output (CV-specific),
+                    which will never appear in generic rubric chunks. Always 0.
 
 Scores are pushed to Langfuse after each run for tracking over time.
 
@@ -26,7 +34,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from datasets import Dataset
 from ragas import evaluate
-from ragas.metrics import faithfulness, answer_relevancy, context_precision, context_recall
+from ragas.metrics import answer_relevancy, context_precision
 
 from app.embeddings.embedder import embed_single
 from app.vectorstore.chroma import get_collection, query_collection
@@ -38,10 +46,8 @@ COLLECTION_NAME = "knowledge_base"
 
 # Minimum acceptable scores — eval job fails (and Langfuse records the breach) if any drop below these.
 _THRESHOLDS = {
-    "faithfulness": 0.70,
     "answer_relevancy": 0.70,
     "context_precision": 0.60,
-    "context_recall": 0.60,
 }
 
 
@@ -112,7 +118,7 @@ def main():
     with open(GOLDEN_DATASET) as f:
         examples = json.load(f)
 
-    questions, answers, contexts, ground_truths = [], [], [], []
+    questions, answers, contexts = [], [], []
 
     for example in examples:
         print(f"Running pipeline for: {example['description']}")
@@ -125,44 +131,36 @@ def main():
         )
         answers.append(review_to_prose(review))
         contexts.append(chunks)
-        ground_truths.append(example["ground_truth"])
         print(f"  overall_score={review.get('overall_score')} ats_score={review.get('ats_score')}")
 
     dataset = Dataset.from_dict({
         "question": questions,
         "answer": answers,
         "contexts": contexts,
-        "ground_truth": ground_truths,
     })
 
     print("\nRunning Ragas evaluation...")
     results = evaluate(
         dataset=dataset,
-        metrics=[faithfulness, answer_relevancy, context_precision, context_recall],
+        metrics=[answer_relevancy, context_precision],
     )
 
     scores = {
-        "faithfulness": results["faithfulness"],
         "answer_relevancy": results["answer_relevancy"],
         "context_precision": results["context_precision"],
-        "context_recall": results["context_recall"],
     }
 
     print("\n=== Ragas Evaluation Results ===")
-    print(f"Faithfulness:        {scores['faithfulness']:.3f}  (1.0 = fully grounded in retrieved context)")
-    print(f"Answer Relevancy:    {scores['answer_relevancy']:.3f}  (1.0 = directly answers the question)")
-    print(f"Context Precision:   {scores['context_precision']:.3f}  (1.0 = all retrieved chunks are relevant)")
-    print(f"Context Recall:      {scores['context_recall']:.3f}  (1.0 = ground truth fully covered by context)")
+    print(f"Answer Relevancy:    {scores['answer_relevancy']:.3f}  (1.0 = review directly addresses the question)")
+    print(f"Context Precision:   {scores['context_precision']:.3f}  (1.0 = all retrieved rubric chunks are relevant)")
     print()
     print("Per-example breakdown:")
     df = results.to_pandas()
     for i, row in df.iterrows():
         print(
             f"  [{examples[i]['id']}] "
-            f"faithfulness={row['faithfulness']:.3f}  "
             f"relevancy={row['answer_relevancy']:.3f}  "
-            f"precision={row['context_precision']:.3f}  "
-            f"recall={row['context_recall']:.3f}"
+            f"precision={row['context_precision']:.3f}"
         )
 
     langfuse = _init_langfuse()
