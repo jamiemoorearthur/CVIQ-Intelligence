@@ -1,0 +1,53 @@
+---
+# Kubernetes Secret holding the Azure Storage Account credentials for the CSI driver.
+# Created by setup.sh — not committed to git.
+# Included here as a reference for what setup.sh creates.
+#
+# kubectl create secret generic azure-storage-secret \
+#   --namespace cv-reviewer \
+#   --from-literal=azurestorageaccountname=cvreviewersa5xzbx \
+#   --from-literal=azurestorageaccountkey=<KEY>
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: chromadb-pv
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  csi:
+    driver: file.csi.azure.com
+    volumeHandle: "cvreviewer-rg#cvreviewersa5xzbx#chromadb"
+    volumeAttributes:
+      shareName: chromadb
+      # storageAccount is set via nodeStageSecretRef below
+    nodeStageSecretRef:
+      name: azure-storage-secret
+      namespace: cv-reviewer
+  mountOptions:
+    - dir_mode=0777
+    - file_mode=0777
+    - uid=1000
+    - gid=1000
+    - mfsymlinks
+    - nobrl
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: chromadb-pvc
+  namespace: cv-reviewer
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: ""
+  volumeName: chromadb-pv
+  resources:
+    requests:
+      storage: 5Gi

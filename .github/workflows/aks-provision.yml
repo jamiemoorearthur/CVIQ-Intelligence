@@ -1,0 +1,83 @@
+name: AKS — Provision Infrastructure
+
+on:
+  workflow_dispatch:
+
+# GitHub Secrets required:
+#   AZURE_CLIENT_ID       — service principal client ID
+#   AZURE_CLIENT_SECRET   — service principal client secret
+#   AZURE_SUBSCRIPTION_ID — eeea42bd-14ba-4541-ac66-5c712ab9e98d
+#   AZURE_TENANT_ID       — 5eef0a4f-29da-435e-921c-496aa725c711
+#   OPENAI_API_KEY        — OpenAI API key
+#   LANGFUSE_PUBLIC_KEY   — Langfuse public key
+#   LANGFUSE_SECRET_KEY   — Langfuse secret key
+#
+# One-time setup — create a service principal with the right roles:
+#   az ad sp create-for-rbac --name cv-reviewer-github \
+#     --role Contributor \
+#     --scopes /subscriptions/<subscription-id>
+#   # Then also grant it Role Based Access Control Administrator
+#   # so it can create role assignments (AcrPull, KV Secrets User):
+#   az role assignment create \
+#     --assignee <sp-object-id> \
+#     --role "Role Based Access Control Administrator" \
+#     --scope /subscriptions/<subscription-id>
+
+jobs:
+  provision:
+    name: Terraform Apply
+    runs-on: ubuntu-latest
+    env:
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      TF_VAR_openai_api_key: ${{ secrets.OPENAI_API_KEY }}
+      TF_VAR_langfuse_public_key: ${{ secrets.LANGFUSE_PUBLIC_KEY }}
+      TF_VAR_langfuse_secret_key: ${{ secrets.LANGFUSE_SECRET_KEY }}
+      TF_VAR_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      TF_VAR_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure CLI login
+        uses: azure/login@v2
+        with:
+          creds: >-
+            {
+              "clientId": "${{ secrets.AZURE_CLIENT_ID }}",
+              "clientSecret": "${{ secrets.AZURE_CLIENT_SECRET }}",
+              "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}",
+              "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
+            }
+
+      - name: Bootstrap Terraform state storage
+        run: |
+          az group create --name cvreviewer-bootstrap --location uksouth \
+            --tags environment=Bootstrap project=cv-reviewer 2>/dev/null || true
+          az storage account create \
+            --name cvreviewertfstate \
+            --resource-group cvreviewer-bootstrap \
+            --sku Standard_LRS \
+            --min-tls-version TLS1_2 2>/dev/null || true
+          az storage container create \
+            --name tfstate \
+            --account-name cvreviewertfstate 2>/dev/null || true
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "~1.9"
+
+      - name: Terraform init
+        working-directory: terraform
+        run: terraform init
+
+      - name: Terraform apply
+        working-directory: terraform
+        run: terraform apply -auto-approve
+
+      - name: Print outputs
+        working-directory: terraform
+        run: terraform output

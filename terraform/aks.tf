@@ -29,6 +29,9 @@ resource "azurerm_kubernetes_cluster" "aks" {
     type = "SystemAssigned"
   }
 
+  # OIDC issuer was enabled on first apply; Azure prevents disabling it once on
+  oidc_issuer_enabled = true
+
   # Key Vault Secrets Provider — mounts secrets from Key Vault into pods via CSI driver
   key_vault_secrets_provider {
     secret_rotation_enabled  = true

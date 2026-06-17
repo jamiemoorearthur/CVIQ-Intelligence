@@ -7,7 +7,7 @@ variable "project_name" {
 variable "location" {
   description = "Azure region to deploy resources"
   type        = string
-  default     = "West Europe"
+  default     = "UK South"
 }
 
 variable "tags" {
@@ -51,7 +51,7 @@ variable "node_count" {
 variable "node_vm_size" {
   description = "VM size for AKS nodes"
   type        = string
-  default     = "Standard_B2s"
+  default     = "Standard_D2s_v5"
 }
 
 # Image tag — passed in by CI/CD when pushing a new build

@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cv-reviewer
+  namespace: cv-reviewer
+  labels:
+    app: cv-reviewer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cv-reviewer
+  template:
+    metadata:
+      labels:
+        app: cv-reviewer
+    spec:
+      containers:
+        - name: cv-reviewer
+          image: cvrevieweracr5xzbx.azurecr.io/cv-reviewer:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - name: APP_ENV
+              value: "production"
+            - name: LANGFUSE_HOST
+              value: "https://cloud.langfuse.com"
+            - name: CORS_ORIGINS
+              value: '["https://cv-reviewer.vercel.app"]'
+          # Secrets injected from Key Vault via CSI driver → synced to K8s Secret
+          envFrom:
+            - secretRef:
+                name: cv-reviewer-secrets
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+          # ChromaDB persists to the Azure File Share
+          volumeMounts:
+            - name: chromadb-storage
+              mountPath: /app/data/chroma
+            # CSI volume must be mounted for the SecretProviderClass to sync K8s Secrets
+            - name: kv-secrets
+              mountPath: /mnt/secrets
+              readOnly: true
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+      volumes:
+        - name: chromadb-storage
+          persistentVolumeClaim:
+            claimName: chromadb-pvc
+        - name: kv-secrets
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: cv-reviewer-secrets

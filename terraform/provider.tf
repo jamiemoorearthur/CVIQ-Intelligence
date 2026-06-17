@@ -16,9 +16,17 @@ terraform {
 }
 
 provider "azurerm" {
-  features {}
+  features {
+    resource_group {
+      # AKS auto-creates ContainerInsights solutions that Terraform doesn't manage.
+      # Without this, terraform destroy fails on the resource group deletion step.
+      prevent_deletion_if_contains_resources = false
+    }
+    key_vault {
+      purge_soft_delete_on_destroy = true
+    }
+  }
 
-  use_cli         = true
   subscription_id = var.subscription_id
   tenant_id       = var.tenant_id
 }

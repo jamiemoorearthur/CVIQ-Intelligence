@@ -1,0 +1,98 @@
+name: AKS — Build & Deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "backend/**"
+  workflow_dispatch:
+
+# Requires the same Azure secrets as aks-provision.yml.
+# Run aks-provision.yml first to create the cluster.
+
+jobs:
+  build-and-deploy:
+    name: Build image and roll out
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure CLI login
+        uses: azure/login@v2
+        with:
+          creds: >-
+            {
+              "clientId": "${{ secrets.AZURE_CLIENT_ID }}",
+              "clientSecret": "${{ secrets.AZURE_CLIENT_SECRET }}",
+              "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}",
+              "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
+            }
+
+      - name: Build and push image to ACR
+        run: |
+          az acr login --name cvrevieweracr5xzbx
+          docker build \
+            --platform linux/amd64 \
+            -t cvrevieweracr5xzbx.azurecr.io/cv-reviewer:${{ github.sha }} \
+            -t cvrevieweracr5xzbx.azurecr.io/cv-reviewer:latest \
+            ./backend
+          docker push cvrevieweracr5xzbx.azurecr.io/cv-reviewer:${{ github.sha }}
+          docker push cvrevieweracr5xzbx.azurecr.io/cv-reviewer:latest
+
+      - name: Get AKS credentials
+        run: |
+          az aks get-credentials \
+            --resource-group cvreviewer-rg \
+            --name cvreviewer-aks \
+            --overwrite-existing
+
+      - name: Apply K8s manifests
+        run: |
+          KV_ADDON_CLIENT_ID=$(az aks show \
+            --resource-group cvreviewer-rg \
+            --name cvreviewer-aks \
+            --query "addonProfiles.azureKeyvaultSecretsProvider.identity.clientId" \
+            -o tsv)
+
+          kubectl apply -f k8s/namespace.yaml
+
+          # Create storage secret for ChromaDB Azure File Share
+          STORAGE_KEY=$(az storage account keys list \
+            --resource-group cvreviewer-rg \
+            --account-name cvreviewersa5xzbx \
+            --query "[0].value" -o tsv)
+          kubectl create secret generic azure-storage-secret \
+            --namespace cv-reviewer \
+            --from-literal=azurestorageaccountname=cvreviewersa5xzbx \
+            --from-literal=azurestorageaccountkey="$STORAGE_KEY" \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+          # Substitute KV addon client ID into SecretProviderClass
+          sed "s|\${KV_ADDON_CLIENT_ID}|$KV_ADDON_CLIENT_ID|g" k8s/secret-provider-class.yaml \
+            | kubectl apply -f -
+
+          kubectl apply -f k8s/storage.yaml
+          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yaml
+
+      - name: Wait for rollout
+        run: |
+          kubectl rollout status deployment/cv-reviewer \
+            --namespace cv-reviewer \
+            --timeout=300s
+
+      - name: Smoke test
+        run: |
+          EXTERNAL_IP=""
+          for i in $(seq 1 24); do
+            EXTERNAL_IP=$(kubectl get svc cv-reviewer \
+              --namespace cv-reviewer \
+              --output jsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null)
+            [ -n "$EXTERNAL_IP" ] && break
+            echo "Waiting for external IP... ($i/24)"
+            sleep 5
+          done
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "http://$EXTERNAL_IP/health")
+          [ "$STATUS" = "200" ] || (echo "Health check failed: HTTP $STATUS" && exit 1)
+          echo "Deployed to http://$EXTERNAL_IP"
