@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const BASE_URL = 'https://cv-reviewer-api.onrender.com'
+const BASE_URL = 'https://cv-reviewer-api.fly.dev'
 
 export const reviewCV = async (cvFile, jobDescription) => {
   const formData = new FormData()
