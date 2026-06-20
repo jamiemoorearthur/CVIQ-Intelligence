@@ -10,7 +10,7 @@ function Home() {
     <div className="app">
       <nav className="navbar">
         <div className="nav-inner">
-          <div className="logo">
+          <div className="logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
             <div className="logo-mark">IQ</div>
             <span className="logo-text">CV<span className="logo-accent">IQ</span></span>
           </div>
@@ -177,7 +177,7 @@ function Home() {
 
       <footer className="footer">
         <div className="footer-inner">
-          <div className="logo">
+          <div className="logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
             <div className="logo-mark">IQ</div>
             <span className="logo-text">CV<span className="logo-accent">IQ</span></span>
           </div>
