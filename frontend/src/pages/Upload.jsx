@@ -10,7 +10,6 @@ import '../styles/Upload.css'
 // don't have a more specific mapping, and only uses a hardcoded fallback if
 // nothing useful came back at all (e.g. network failure, server unreachable).
 function getErrorMessage(err) {
-  // No response at all = network issue / server unreachable / CORS
   if (!err.response) {
     return {
       title: 'Connection problem',
@@ -22,18 +21,17 @@ function getErrorMessage(err) {
   const detail = err.response.data?.detail || ''
   const detailLower = detail.toLowerCase()
 
-  // 400s from the backend's input gate — these carry a specific reason
   if (status === 400) {
     if (detailLower.includes('unsupported file type')) {
       return {
         title: 'Unsupported file type',
-        message: 'Please upload your CV as a PDF.',
+        message: 'Please upload your CV as a .pdf or .docx file.',
       }
     }
     if (detailLower.includes('no text could be extracted')) {
       return {
         title: "Couldn't read your CV",
-        message: 'This looks like a scanned or image-based PDF. Please upload a text-based PDF instead.',
+        message: 'This looks like a scanned or image-based file. Please upload a text-based .pdf or .docx file instead.',
       }
     }
     if (detailLower.includes('exceeds maximum length')) {
@@ -50,14 +48,12 @@ function getErrorMessage(err) {
         message: 'Your CV or job description contains content we can\'t process. Please review and try again.',
       }
     }
-    // Generic 400 fallback — still show the backend's own message, it's better than nothing
     return {
       title: 'Invalid submission',
       message: detail || 'Please check your CV and job description and try again.',
     }
   }
 
-  // 500s — pipeline/LLM failures, out of our control but worth distinguishing from input errors
   if (status >= 500) {
     return {
       title: 'Server error',
@@ -65,7 +61,6 @@ function getErrorMessage(err) {
     }
   }
 
-  // Anything else unexpected
   return {
     title: 'Something went wrong',
     message: detail || 'Please try again.',
@@ -88,7 +83,10 @@ function Upload() {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: { 'application/pdf': ['.pdf'] },
+    accept: {
+      'application/pdf': ['.pdf'],
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+    },
     maxFiles: 1,
   })
 
@@ -107,7 +105,6 @@ function Upload() {
     }
   }
 
-  // While the API call is in flight, replace the form with the multi-stage loading screen
   if (loading) {
     return (
       <div className="upload-page">
@@ -144,7 +141,6 @@ function Upload() {
         </div>
 
         <div className="upload-form">
-          {/* Drop zone */}
           <div {...getRootProps()} className={`dropzone ${isDragActive ? 'active' : ''} ${file ? 'has-file' : ''}`}>
             <input {...getInputProps()} />
             <div className="dropzone-icon">
@@ -153,11 +149,10 @@ function Upload() {
             <p className="dropzone-title">
               {isDragActive ? 'Drop it here!' : 'Drag & drop your CV here'}
             </p>
-            <p className="dropzone-sub">or click to browse — PDF only</p>
+            <p className="dropzone-sub">or click to browse — .pdf or .docx</p>
             <button className="btn-choose" type="button">Choose file</button>
           </div>
 
-          {/* File attached */}
           {file && (
             <div className="file-attached">
               <span className="file-icon">📎</span>
@@ -169,7 +164,6 @@ function Upload() {
             </div>
           )}
 
-          {/* Job description */}
           <div className="field">
             <label htmlFor="job-desc">Job description</label>
             <textarea
@@ -182,7 +176,6 @@ function Upload() {
             <p className="field-hint">Tip: include the full job description for the most accurate feedback.</p>
           </div>
 
-          {/* Error — now shows a specific title + message instead of one generic line */}
           {error && (
             <div className="error-msg">
               <strong className="error-msg-title">{error.title}</strong>
@@ -190,7 +183,6 @@ function Upload() {
             </div>
           )}
 
-          {/* Submit */}
           <button
             className="btn-primary"
             onClick={handleSubmit}
