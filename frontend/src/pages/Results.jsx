@@ -7,9 +7,9 @@ import KeywordList from '../components/KeywordList'
 import BulletRewrites from '../components/BulletRewrites'
 import SectionRecommendations from '../components/SectionRecommendations'
 import CVModal from '../components/CVModal'
+import { extractCvText, filterTrulyMissing } from '../utils/filterKeywords'
 import '../styles/Results.css'
 
-// These control the "boxes fade and slide up one after another" animation
 const containerVariants = {
   hidden: { opacity: 0 },
   show: { opacity: 1, transition: { staggerChildren: 0.18 } },
@@ -21,7 +21,7 @@ const itemVariants = {
 }
 
 const RESULT_KEY = 'cviq:last-result'
-const FILE_KEY = 'cviq:last-cv-file' // separate key so a large file doesn't slow down result reads
+const FILE_KEY = 'cviq:last-cv-file'
 
 function Results() {
   const location = useLocation()
@@ -43,7 +43,6 @@ function Results() {
     } catch { return null }
   })
 
-  // Same idea for the CV file — prefer what came via navigation, fall back to storage
   const [cvFile, setCvFile] = useState(() => {
     const fromNav = location.state?.cvFile
     if (fromNav) return fromNav
@@ -53,6 +52,24 @@ function Results() {
     } catch { return null }
   })
 
+  // The backend sometimes flags keywords that are already in the CV —
+  // we extract the CV text and filter those out so the keyword list is accurate
+  const [filteredKeywords, setFilteredKeywords] = useState(result?.missing_keywords || [])
+
+  useEffect(() => {
+    async function verifyKeywords() {
+      if (!cvFile || !result?.missing_keywords?.length) return
+      try {
+        const cvText = await extractCvText(cvFile.base64, cvFile.type)
+        setFilteredKeywords(filterTrulyMissing(result.missing_keywords, cvText))
+      } catch {
+        // If extraction fails for any reason, just show the original list
+        setFilteredKeywords(result.missing_keywords)
+      }
+    }
+    verifyKeywords()
+  }, [cvFile, result])
+
   // Every time we get new results, save a copy to the browser's notepad.
   // That way, if the page gets refreshed later, we can still find them.
   useEffect(() => {
@@ -61,7 +78,6 @@ function Results() {
     }
   }, [result])
 
-  // Save the CV file to sessionStorage the same way
   useEffect(() => {
     if (cvFile) {
       try { sessionStorage.setItem(FILE_KEY, JSON.stringify(cvFile)) } catch {}
@@ -77,8 +93,6 @@ function Results() {
     if (!result) navigate('/')
   }, [result, navigate])
 
-  // While we're waiting to redirect (or if there's just nothing to show),
-  // don't render anything
   if (!result) return null
 
   return (
@@ -101,7 +115,6 @@ function Results() {
           <h1>Your CV results</h1>
           <p className="results-hero-sub">Here's how your CV performed against the job description.</p>
         </div>
-        {/* Only show the "View my CV" button if we actually have the file */}
         {cvFile && (
           <button className="btn-view-cv" onClick={() => setShowCVModal(true)}>
             📄 View my CV
@@ -127,7 +140,8 @@ function Results() {
           <ResultPanel strengths={result.strengths} weaknesses={result.weaknesses} />
         </motion.div>
         <motion.div variants={itemVariants}>
-          <KeywordList keywords={result.missing_keywords} />
+          {/* Pass the filtered keywords so false positives don't show up here either */}
+          <KeywordList keywords={filteredKeywords} />
         </motion.div>
         <motion.div variants={itemVariants}>
           <BulletRewrites bullets={result.suggested_bullets} />
@@ -154,13 +168,14 @@ function Results() {
         </div>
       </footer>
 
-      {/* CV preview modal — only mounts when the user clicks "View my CV" */}
       {showCVModal && cvFile && (
         <CVModal
           fileBase64={cvFile.base64}
           fileType={cvFile.type}
           fileName={cvFile.name}
           onClose={() => setShowCVModal(false)}
+          missingKeywords={filteredKeywords}
+          weakBullets={result.suggested_bullets || []}
         />
       )}
     </div>
