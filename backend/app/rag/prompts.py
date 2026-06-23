@@ -26,7 +26,6 @@ def build_review_prompt(cv_text: str, job_description: str, context_chunks: list
 {cv_text}
 
 ---
-
 ## Job Description
 
 {job_description}
@@ -34,7 +33,7 @@ def build_review_prompt(cv_text: str, job_description: str, context_chunks: list
 ---
 
 ## Task
-
+Allow the AI to fully rewrite the CV to improve it, but do not invent any new information. Only rewrite what is present in the CV.
 Review the CV against the job description using the rubric and guidelines above.
 
 Return ONLY a JSON object with this exact structure:
