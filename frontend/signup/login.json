@@ -1,0 +1,12 @@
+{
+  "login": {
+    "username": "user123",
+    "password": "pass123"
+  },
+  "signup": {
+    "username": "newuser",
+    "email": "newuser@example.com",
+    "password": "pass456",
+    "confirmPassword": "pass456"
+  }
+}
