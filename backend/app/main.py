@@ -7,6 +7,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import health, review, upload, knowledge_base, download, auth, testimonials
+from stripe_backend import router as stripe_router 
 from app.core.config import settings
 from app.ingestion.chunker import chunk_text
 from app.embeddings.embedder import embed_texts
@@ -77,6 +78,7 @@ app.include_router(upload.router)
 app.include_router(review.router)
 app.include_router(download.router)
 app.include_router(knowledge_base.router)
+app.include_router(stripe.router) 
 
 @app.get("/")
 def root():
