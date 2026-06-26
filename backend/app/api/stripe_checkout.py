@@ -42,7 +42,7 @@ async def create_checkout_session():
                         "quantity": 1,
                     }
                 ],
-                "mode": "payment",
+                "mode": "subscription",
                 "return_url": (
                     f"{YOUR_DOMAIN}/return.html"
                     "?session_id={{CHECKOUT_SESSION_ID}}"
