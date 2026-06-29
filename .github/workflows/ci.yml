@@ -55,20 +55,27 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: superfly/flyctl-actions/setup-flyctl@master
-
-      - name: Deploy to Fly.io
-        working-directory: backend
-        run: flyctl deploy --local-only
-        env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+      - name: Deploy to Oracle VM
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: 129.159.222.241
+          username: ubuntu
+          key: ${{ secrets.ORACLE_SSH_PRIVATE_KEY }}
+          script: |
+            cd ~/Resume-Review-Engine && git pull
+            cd backend && docker build -t cv-reviewer .
+            docker stop cv-reviewer || true
+            docker rm cv-reviewer || true
+            docker run -d --name cv-reviewer --restart unless-stopped \
+              -p 8000:8000 \
+              -v /app/data/chroma:/app/data/chroma \
+              --env-file ~/app.env \
+              cv-reviewer
 
       - name: Smoke test
         run: |
           for i in $(seq 1 12); do
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://cv-reviewer-api.fly.dev/health)
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://129.159.222.241/health)
             if [ "$STATUS" = "200" ]; then
               echo "Health check passed (attempt $i)"
               exit 0
@@ -89,7 +96,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          node-version: "20"
 
       - name: Deploy to Vercel
         working-directory: frontend
