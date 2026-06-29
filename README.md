@@ -188,7 +188,7 @@ Every ChromaDB chunk carries a source filename, SHA-256 document hash, chunk ind
 | [Pydantic v2](https://docs.pydantic.dev/) | Request/response validation |
 | [pypdf 6.13.3](https://pypdf.readthedocs.io/) | PDF text extraction |
 | [python-multipart](https://multipart.fastapiexpert.com/) | File upload handling |
-
+| [Supa-Base](https://supabase.com/) | Auth |
 ### AI and NLP
 | Technology | Purpose |
 |---|---|
