@@ -23,7 +23,7 @@ An AI-powered CV review platform that analyses your resume against a real job de
 | | URL |
 |---|---|
 | **Frontend** | [cviq27.vercel.app](https://cviq27.vercel.app/) |
-| **Backend API** | [cv-reviewer-api.fly.dev/docs](http://129.159.222.241/docs) |
+| **Backend API** | [cv-reviewer-api.orcale/docs](https://cvreview-api.duckdns.org/docs) |
 
 ---
 
