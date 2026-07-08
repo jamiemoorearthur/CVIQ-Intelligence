@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
+import '../styles/testimonials.css'
+
 const BASE_URL = 'http://129.159.222.241'
 
 function StarRating({ rating }) {
@@ -226,7 +228,7 @@ function Testimonials() {
             )}
 
             <div className="testimonial-cta">
-              <button className="btn-outline-lg" onClick={() => setShowForm(true)}>
+              <button className="b-btn-primary" onClick={() => setShowForm(true)}>
                 Share your experience →
               </button>
             </div>

@@ -1,0 +1,166 @@
+/* ── Testimonials — full light theme override ────────── */
+.b-page .testimonials-section {
+   background: #f8fafc;
+   border-top: 1px solid #e5e7eb;
+   padding: 112px 72px;
+ }
+ .b-page .section-label {
+   font-size: 11px;
+   font-weight: 700;
+   color: #2563eb;
+   text-transform: uppercase;
+   letter-spacing: 1.5px;
+   margin-bottom: 16px;
+   background: none;
+   border: none;
+   padding: 0;
+ }
+ .b-page .section-h2 {
+   font-family: 'Instrument Serif', Georgia, serif;
+   font-size: 58px;
+   font-weight: 400;
+   color: #0a1628;
+   letter-spacing: -2px;
+   line-height: 1.05;
+   margin-bottom: 14px;
+ }
+ .b-page .section-sub {
+   font-size: 17px;
+   color: #6b7280;
+   line-height: 1.65;
+   max-width: 460px;
+   margin: 0 auto;
+ }
+ 
+ /* ── Carousel cards ──────────────────────────────────── */
+ .b-page .testimonial-card {
+   background: #fff;
+   border: 1px solid #e5e7eb;
+   border-radius: 20px;
+   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+   padding: 28px;
+ }
+ .b-page .testimonial-card.active {
+   background: #fff;
+   border-color: #bfdbfe;
+   box-shadow: 0 8px 32px rgba(37,99,235,0.08);
+ }
+ .b-page .testimonial-message {
+   color: #374151;
+   font-size: 15px;
+   line-height: 1.75;
+   font-style: italic;
+ }
+ .b-page .testimonial-name { color: #0a1628; font-size: 14px; font-weight: 700; }
+ .b-page .testimonial-role { color: #6b7280; font-size: 12px; }
+ .b-page .star { color: #e5e7eb; }
+ .b-page .star.filled { color: #f59e0b; }
+ 
+ /* ── Navigation arrows and dots ─────────────────────── */
+ .b-page .testimonial-arrow {
+   background: #fff;
+   border: 1px solid #e5e7eb;
+   color: #374151;
+   box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+   border-radius: 50%;
+   width: 36px;
+   height: 36px;
+ }
+ .b-page .testimonial-arrow:hover {
+   border-color: #9ca3af;
+   color: #0a1628;
+   background: #f9fafb;
+ }
+ .b-page .testimonial-dot { background: #d1d5db; }
+ .b-page .testimonial-dot.active { background: #2563eb; }
+ 
+ /* ── "Share your experience" button ─────────────────── */
+ .b-page .btn-outline-lg {
+   background: #fff;
+   color: #0a1628;
+   border: 1.5px solid #e5e7eb;
+   border-radius: 100px;
+   padding: 13px 28px;
+   font-size: 15px;
+   font-weight: 500;
+   font-family: 'Inter', sans-serif;
+   cursor: pointer;
+   transition: all 0.15s;
+   box-shadow: 0 1px 0 0 #d1d5db, 0 2px 6px rgba(0,0,0,0.05);
+ }
+ .b-page .btn-outline-lg:hover { border-color: #9ca3af; background: #f9fafb; }
+ 
+ /* ── Submit form ─────────────────────────────────────── */
+ .b-page .testimonial-form {
+   background: #fff;
+   border: 1px solid #e5e7eb;
+   border-radius: 20px;
+   padding: 40px;
+   max-width: 640px;
+   margin: 48px auto 0;
+   box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+ }
+ .b-page .testimonial-form h3 {
+   font-family: 'Instrument Serif', Georgia, serif;
+   font-size: 28px;
+   font-weight: 400;
+   color: #0a1628;
+   letter-spacing: -0.5px;
+   margin-bottom: 6px;
+ }
+ .b-page .testimonial-form p {
+   font-size: 15px;
+   color: #6b7280;
+   margin-bottom: 28px;
+   line-height: 1.6;
+ }
+ .b-page .testimonial-form .field label {
+   font-size: 13px;
+   font-weight: 600;
+   color: #374151;
+   display: block;
+   margin-bottom: 6px;
+ }
+ .b-page .testimonial-form .field input,
+ .b-page .testimonial-form .field textarea {
+   background: #f8fafc;
+   border: 1.5px solid #e5e7eb;
+   border-radius: 10px;
+   color: #0a1628;
+   font-size: 14px;
+   font-family: 'Inter', sans-serif;
+   padding: 11px 14px;
+   width: 100%;
+   box-sizing: border-box;
+   transition: all 0.15s;
+   resize: vertical;
+ }
+ .b-page .testimonial-form .field input::placeholder,
+ .b-page .testimonial-form .field textarea::placeholder { color: #9ca3af; }
+ .b-page .testimonial-form .field input:focus,
+ .b-page .testimonial-form .field textarea:focus {
+   outline: none;
+   border-color: #2563eb;
+   background: #fff;
+   box-shadow: 0 0 0 3px rgba(37,99,235,0.08);
+ }
+ .b-page .rating-selector { display: flex; gap: 6px; }
+ .b-page .rating-star { background: none; border: none; font-size: 24px; color: #d1d5db; cursor: pointer; padding: 0; transition: all 0.15s; font-family: inherit; line-height: 1; }
+ .b-page .rating-star.selected { color: #f59e0b; }
+ .b-page .rating-star:hover { color: #f59e0b; transform: scale(1.1); }
+ .b-page .testimonial-form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 28px; }
+ .b-page .btn-ghost-sm { background: #fff; border: 1.5px solid #e5e7eb; color: #374151; padding: 10px 20px; border-radius: 100px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+ .b-page .btn-ghost-sm:hover { border-color: #9ca3af; color: #0a1628; }
+ .b-page .btn-dark { background: linear-gradient(180deg, #1e293b 0%, #0a1628 100%); color: #fff; border: none; padding: 10px 22px; border-radius: 100px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; box-shadow: 0 1px 0 0 #000, 0 2px 6px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.08); }
+ .b-page .btn-dark:hover:not(:disabled) { background: linear-gradient(180deg, #334155 0%, #1e293b 100%); box-shadow: 0 1px 0 0 #000, 0 4px 10px rgba(0,0,0,0.3); }
+ .b-page .btn-dark:disabled { opacity: 0.45; cursor: not-allowed; }
+ 
+ /* ── Success state ───────────────────────────────────── */
+ .b-page .testimonial-form-success { background: #fff; border: 1.5px solid #bbf7d0; border-radius: 20px; padding: 56px 40px; max-width: 640px; margin: 48px auto 0; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 14px; box-shadow: 0 4px 16px rgba(22,163,74,0.06); }
+ .b-page .success-icon { width: 52px; height: 52px; background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; color: #16a34a; }
+ .b-page .testimonial-form-success h3 { font-family: 'Instrument Serif', Georgia, serif; font-size: 26px; font-weight: 400; color: #0a1628; margin: 0; }
+ .b-page .testimonial-form-success p { font-size: 15px; color: #6b7280; margin: 0; line-height: 1.6; }
+ 
+ /* ── Responsive ──────────────────────────────────────── */
+ @media (max-width: 1100px) { .b-page .testimonials-section { padding-left: 40px; padding-right: 40px; } }
+ @media (max-width: 600px) { .b-page .testimonials-section { padding: 72px 20px; } .b-page .testimonial-form { padding: 28px 20px; } .b-page .section-h2 { font-size: 36px; } }

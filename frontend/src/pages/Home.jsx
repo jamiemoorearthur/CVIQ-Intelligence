@@ -150,7 +150,7 @@ function CVBeforeAfter() {
       <div className="b-section-head">
         <div className="b-label">AI Transformation</div>
         <h2 className="b-h2">See what CVIQ<br />does to your CV.</h2>
-        <p className="b-section-sub">A real before-and-after. Same candidate, a completely different impression.</p>
+        <p className="b-section-sub">A real before and after. Same candidate, a completely different impression.</p>
       </div>
 
       <div className="b-cv-compare">
@@ -269,7 +269,7 @@ export default function Home() {
             Stop losing jobs<br />to a <em>broken</em> CV.
           </h1>
           <p className="b-hero-sub">
-            75% of CVs never reach a human. CVIQ tells you exactly what's wrong and rewrites it for you — in seconds.
+            75% of CVs never reach a human. CVIQ tells you exactly what's wrong and rewrites it for you in seconds.
           </p>
           <div className="b-hero-actions">
             <button className="b-btn-primary" onClick={() => navigate('/upload')}>
@@ -366,7 +366,7 @@ export default function Home() {
             <div className="b-hiw-text">
               <div className="b-hiw-step">Step 03</div>
               <h3 className="b-hiw-title">Get your review</h3>
-              <p className="b-hiw-body">Scores, keyword gaps, strengths, weaknesses, and AI-rewritten bullets — in seconds.</p>
+              <p className="b-hiw-body">Scores, keyword gaps, strengths, weaknesses, and AI-rewritten bullets in seconds.</p>
             </div>
           </div>
 
@@ -382,12 +382,12 @@ export default function Home() {
         </div>
         <div className="b-features-grid">
           {[
-            { title: 'Recruiter Feedback Score', body: 'A 0–10 score based on how a real recruiter would evaluate your CV, with colour-coded feedback bands.' },
+            { title: 'Recruiter Feedback Score', body: 'A 0 to 10 score based on how a real recruiter would evaluate your CV, with colour-coded feedback bands.' },
             { title: 'ATS Compatibility Check', body: 'See your ATS score and exactly which keywords are missing based on the job description.' },
-            { title: 'AI Bullet Rewrites', body: 'Every weak bullet gets rewritten in the Action + Impact format that recruiters look for.' },
-            { title: 'Download Your Improved CV', body: 'Get your tailored CV as a PDF or .docx — ready to send, with all improvements applied.' },
-            { title: 'CV Preview with Feedback', body: 'View your CV side-by-side with the feedback so you know exactly which lines need changing.' },
-            { title: 'Category Breakdown', body: 'Scores across 6 categories — impact, relevance, structure, clarity, ATS, and keywords.' },
+            { title: 'AI Bullet Rewrites', body: 'Every weak bullet gets rewritten in the Action plus Impact format that recruiters look for.' },
+            { title: 'Download Your Improved CV', body: 'Get your tailored CV as a PDF or .docx, ready to send with all improvements applied.' },
+            { title: 'CV Preview with Feedback', body: 'View your CV side by side with the feedback so you know exactly which lines need changing.' },
+            { title: 'Category Breakdown', body: 'Scores across six categories: impact, relevance, structure, clarity, ATS, and keywords.' },
           ].map((f, i) => (
             <div key={i} className="b-feature-card reveal" style={{ transitionDelay: `${i * 0.07}s` }}>
               <div className="b-feature-icon">{f.icon}</div>
@@ -470,7 +470,7 @@ export default function Home() {
       <section className="b-cta reveal">
         <div className="b-blob b-blob-centre" />
         <h2 className="b-cta-h2">Stop guessing.<br /><em>Start getting interviews.</em></h2>
-        <p className="b-cta-sub">Upload your CV and get a full AI-powered review in under 60 seconds.</p>
+        <p className="b-cta-sub">Upload your CV and get a full AI powered review in under 60 seconds.</p>
         <button className="b-btn-primary" onClick={() => navigate('/upload')}>
           Analyse my CV for free →
         </button>

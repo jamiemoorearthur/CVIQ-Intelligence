@@ -219,38 +219,6 @@ body { background: #fff; color: #0a1628; font-family: 'Inter', -apple-system, sa
 .b-btn-primary-full:hover { background: linear-gradient(180deg, #60a5fa 0%, #2563eb 100%); }
 .b-btn-primary-full:active { transform: translateY(1px); box-shadow: none; }
 
-/* ── Testimonials light overrides ────────────────────── */
-.b-page .testimonials-section { background: #fff; border-top: 1px solid #e5e7eb; padding: 112px 72px; }
-.b-page .section-label { color: #2563eb; }
-.b-page .section-h2 { font-family: 'Instrument Serif', serif; font-size: 58px; font-weight: 400; color: #0a1628; letter-spacing: -2px; }
-.b-page .section-sub { color: #6b7280; }
-.b-page .testimonial-card { background: #f8fafc; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-.b-page .testimonial-card.active { background: #fff; border-color: #bfdbfe; box-shadow: 0 8px 32px rgba(37,99,235,0.08); }
-.b-page .testimonial-message { color: #374151; font-size: 15px; }
-.b-page .testimonial-name { color: #0a1628; }
-.b-page .testimonial-role { color: #6b7280; }
-.b-page .testimonial-arrow { background: #fff; border: 1px solid #e5e7eb; color: #6b7280; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
-.b-page .testimonial-arrow:hover { color: #0a1628; border-color: #9ca3af; }
-.b-page .testimonial-dot { background: #d1d5db; }
-.b-page .testimonial-dot.active { background: #2563eb; }
-.b-page .btn-outline-lg { background: #fff; color: #0a1628; border: 1.5px solid #e5e7eb; border-radius: 100px; box-shadow: 0 1px 0 0 #d1d5db, 0 2px 6px rgba(0,0,0,0.05); }
-.b-page .btn-outline-lg:hover { border-color: #9ca3af; }
-.b-page .testimonial-form { background: #fff; border: 1px solid #e5e7eb; }
-.b-page .testimonial-form h3 { color: #0a1628; }
-.b-page .testimonial-form p { color: #6b7280; }
-.b-page .testimonial-form .field label { color: #374151; }
-.b-page .testimonial-form .field input, .b-page .testimonial-form .field textarea { background: #f8fafc; border: 1.5px solid #e5e7eb; color: #0a1628; }
-.b-page .testimonial-form .field input::placeholder, .b-page .testimonial-form .field textarea::placeholder { color: #9ca3af; }
-.b-page .testimonial-form .field input:focus, .b-page .testimonial-form .field textarea:focus { border-color: #2563eb; background: #fff; outline: none; }
-.b-page .testimonial-form-success { background: #fff; border: 1px solid #d1fae5; }
-.b-page .testimonial-form-success h3 { color: #0a1628; }
-.b-page .testimonial-form-success p { color: #6b7280; }
-.b-page .success-icon { background: #f0fdf4; border: 1px solid #bbf7d0; color: #16a34a; }
-.b-page .btn-ghost-sm { background: #fff; border: 1px solid #e5e7eb; color: #374151; border-radius: 100px; }
-.b-page .btn-dark { background: linear-gradient(180deg, #1e293b 0%, #0a1628 100%); color: #fff; border: none; border-radius: 100px; box-shadow: 0 1px 0 0 #000, 0 2px 6px rgba(0,0,0,0.25); }
-.b-page .rating-star { color: #d1d5db; }
-.b-page .rating-star.selected, .b-page .rating-star:hover { color: #f59e0b; }
-
 /* ── Final CTA ───────────────────────────────────────── */
 .b-cta { position: relative; padding: 140px 72px; text-align: center; background: #fff; border-top: 1px solid #e5e7eb; overflow: hidden; }
 .b-cta-h2 { font-family: 'Instrument Serif', serif; font-size: 68px; font-weight: 400; letter-spacing: -3px; color: #0a1628; margin-bottom: 18px; line-height: 1.0; position: relative; z-index: 1; }
