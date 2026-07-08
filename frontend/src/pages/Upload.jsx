@@ -153,9 +153,9 @@ function Upload() {
               onChange={(e) => setJobDescription(e.target.value)}
               rows={8}
             />
-            <p className="field-hint">Tip: include the full job description for the most accurate feedback.</p>
+            <p className="field-hint">Tip: include the full job description for the most accurate feedback & We recommend removing personal information such as your home address, phone number, and date of birth before uploading your CV. This helps protect your privacy while allowing our AI to provide accurate feedback. .</p>
           </div>
-
+          
           {error && (
             <div className="error-msg">
               <strong className="error-msg-title">{error.title}</strong>
