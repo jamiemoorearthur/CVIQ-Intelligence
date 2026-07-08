@@ -16,7 +16,7 @@ function StarRating({ rating }) {
 }
 
 function TestimonialCard({ testimonial, isActive }) {
-  // Generate an avatar colour from the first letter of the name
+  // Generate an avatar colour from the first letter of the name 
   const colours = ['#1d4ed8', '#0f6e56', '#6366f1', '#f59e0b', '#ec4899', '#ef4444', '#10b981']
   const colourIndex = (testimonial.name?.charCodeAt(0) || 0) % colours.length
 
