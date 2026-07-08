@@ -11,7 +11,7 @@ body { background: #fff; color: #0a1628; font-family: 'Inter', -apple-system, sa
 .b-blob-left { width: 500px; height: 500px; left: -80px; top: 50%; transform: translateY(-50%); background: radial-gradient(ellipse at center, rgba(56,189,248,0.6) 0%, rgba(96,165,250,0.35) 45%, transparent 70%); filter: blur(50px); }
 .b-blob-centre { width: 800px; height: 500px; left: 50%; top: 50%; transform: translate(-50%,-50%); background: radial-gradient(ellipse at center, rgba(56,189,248,0.5) 0%, rgba(99,161,255,0.3) 40%, transparent 70%); filter: blur(50px); }
 
-/* ── Nav ─────────────────────────────────────────────── */
+/* ── Nav ─────────────────────────────────────────────── */ 
 .b-nav { position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,0.92); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(0,0,0,0.06); padding: 0 72px; height: 68px; display: flex; align-items: center; }
 .b-nav-inner { width: 100%; display: flex; align-items: center; justify-content: space-between; }
 .b-logo { display: flex; align-items: center; cursor: pointer; }
