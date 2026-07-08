@@ -150,7 +150,7 @@ function CVBeforeAfter() {
       <div className="b-section-head">
         <div className="b-label">AI Transformation</div>
         <h2 className="b-h2">See what CVIQ<br />does to your CV.</h2>
-        <p className="b-section-sub">A real before-and-after. Same candidate, a completely different impression.</p>
+        <p className="b-section-sub">A real before and after. Same candidate, a completely different impression.</p>
       </div>
 
       <div className="b-cv-compare">
