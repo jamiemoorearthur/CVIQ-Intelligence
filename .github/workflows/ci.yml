@@ -67,7 +67,7 @@ jobs:
             docker stop cv-reviewer || true
             docker rm cv-reviewer || true
             docker run -d --name cv-reviewer --restart unless-stopped \
-              -p 8000:8000 \
+              --network=host \
               -v /app/data/chroma:/app/data/chroma \
               --env-file ~/app.env \
               cv-reviewer
