@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     def cors_origins_list(self) -> list[str]:
         return [o.strip() for o in self.cors_origins.split(",")]
 
-    prompt_version: str = "v1.0.0"
+    prompt_version: str = "v1.1.0"
 
     langfuse_public_key: str = ""
     langfuse_secret_key: str = ""

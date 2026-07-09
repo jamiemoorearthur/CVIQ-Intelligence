@@ -51,6 +51,44 @@ Return ONLY a JSON object with this exact structure:
     "structure_readability": <integer 0-100>,
     "missing_evidence": <integer 0-100>
   }},
+  "category_breakdowns": {{
+    "role_alignment": {{
+      "explanation": "<why this score — reference specific CV content>",
+      "what_is_weak": "<what specifically lets this category down>",
+      "how_to_improve": "<concrete action to raise the score>"
+    }},
+    "skills_match": {{
+      "explanation": "<why this score>",
+      "what_is_weak": "<what is weak>",
+      "how_to_improve": "<how to improve>"
+    }},
+    "experience_relevance": {{
+      "explanation": "<why this score>",
+      "what_is_weak": "<what is weak>",
+      "how_to_improve": "<how to improve>"
+    }},
+    "ats_keyword_match": {{
+      "explanation": "<why this score>",
+      "what_is_weak": "<what is weak>",
+      "how_to_improve": "<how to improve>"
+    }},
+    "bullet_point_quality": {{
+      "explanation": "<why this score>",
+      "what_is_weak": "<what is weak>",
+      "how_to_improve": "<how to improve>"
+    }},
+    "structure_readability": {{
+      "explanation": "<why this score>",
+      "what_is_weak": "<what is weak>",
+      "how_to_improve": "<how to improve>"
+    }},
+    "missing_evidence": {{
+      "explanation": "<why this score>",
+      "what_is_weak": "<what is weak>",
+      "how_to_improve": "<how to improve>"
+    }}
+  }},
+  "recruiter_reasoning": "<2-3 sentences written as a recruiter explaining your overall impression, referencing specific CV content. Be direct — would you shortlist this candidate and why?>",
   "role_alignment": <"Strong" | "Good" | "Moderate" | "Weak">,
   "missing_keywords": [<list of strings>],
   "strengths": [<list of strings, max 4>],
@@ -67,10 +105,12 @@ Return ONLY a JSON object with this exact structure:
 Rules:
 - overall_score is the weighted average across all 7 rubric categories
 - ats_score is specifically the ATS keyword match score
-- recruiter_score is how likely a recruiter is to shortlist this CV in a 6-second scan (0-10). Weight ATS keyword presence, role alignment, bullet clarity, and quantified achievements most heavily. A 10 means near-certain shortlist; a 0 means immediate rejection.
-- category_scores contains the raw score (0-100) for each of the 7 rubric categories before weighting
+- recruiter_score is how likely a recruiter is to shortlist this CV in a 6-second scan (0-10)
+- category_scores contains the raw score (0-100) for each of the 7 rubric categories
+- category_breakdowns must reference specific content from the CV — never give generic advice
+- recruiter_reasoning must be written in first person as a recruiter, referencing specific CV lines or sections
 - missing_keywords must be exact terms from the job description that are absent from the CV
-- section_recommendations lists specific sections to add or remove (e.g. "Add a Technical Skills section", "Remove the Hobbies section — not relevant for this role"). Return an empty list if the CV structure is appropriate.
+- section_recommendations lists specific sections to add or remove. Return empty list if structure is appropriate.
 - suggested_bullets must quote exact text from the CV — do not invent bullets
-- suggested_bullets count scales with CV quality: return 4-6 for overall_score below 50, 2-3 for 50-74, 0-1 for 75 and above (only if a clearly weak bullet exists)
+- suggested_bullets count: 4-6 for overall_score below 50, 2-3 for 50-74, 0-1 for 75 and above
 - Return valid JSON only. No markdown, no explanation, no extra text."""

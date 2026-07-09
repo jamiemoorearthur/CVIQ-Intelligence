@@ -21,11 +21,21 @@ def validate_and_clean(raw: dict) -> dict:
     if raw.get("role_alignment") not in VALID_ROLE_ALIGNMENT_LABELS:
         raw["role_alignment"] = "Moderate"
 
-    # Ensure these fields are always lists, never None or missing
+    # Ensure list fields are always lists
     raw["missing_keywords"] = raw.get("missing_keywords") or []
     raw["strengths"] = raw.get("strengths") or []
     raw["weaknesses"] = raw.get("weaknesses") or []
     raw["section_recommendations"] = raw.get("section_recommendations") or []
     raw["suggested_bullets"] = raw.get("suggested_bullets") or []
+
+    # Ensure recruiter_reasoning is always a string
+    raw["recruiter_reasoning"] = raw.get("recruiter_reasoning") or ""
+
+    # Ensure category_breakdowns has all 7 keys with valid structure
+    _blank_breakdown = {"explanation": "", "what_is_weak": "", "how_to_improve": ""}
+    breakdowns = raw.get("category_breakdowns") or {}
+    raw["category_breakdowns"] = {
+        k: breakdowns.get(k) or _blank_breakdown for k in _CATEGORY_KEYS
+    }
 
     return raw
