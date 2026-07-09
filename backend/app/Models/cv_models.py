@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+from typing import Literal
 
 
 class SuggestedBullet(BaseModel):
@@ -57,3 +58,32 @@ class ReviewResponse(BaseModel):
     suggested_bullets: list[SuggestedBullet]
     line_feedback: list[LineFeedback] = Field(default_factory=list)
     summary_improvement: str = ""
+
+
+# --- Chat ---
+
+class ChatMessage(BaseModel):
+    role: Literal["user", "assistant"]
+    content: str
+
+
+class ChatRequest(BaseModel):
+    message: str
+    cv_text: str
+    job_description: str
+    history: list[ChatMessage] = Field(default_factory=list)
+
+
+class ChatResponse(BaseModel):
+    response: str
+
+
+# --- Bullet rewrite ---
+
+class RewriteBulletRequest(BaseModel):
+    bullet: str
+    job_description: str
+
+
+class RewriteBulletResponse(BaseModel):
+    rewrites: list[str]
