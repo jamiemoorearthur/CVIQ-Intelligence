@@ -36,19 +36,6 @@ export async function chatWithCV({ message, cvText, jobDescription, history }) {
  10|   const response = await axios.post(`${BASE_URL}/review`, formData)
  11|   return response.data
  12| }
-+|
-+// If code elsewhere expects chatWithCV, export an alias to keep compatibility
-+export { reviewCV as chatWithCV }
-export async function rewriteBullet({ bullet, jobDescription }) {
-  const res = await fetch(`${BASE_URL}/rewrite-bullet`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ bullet, job_description: jobDescription }),
-  })
-  if (!res.ok) throw new Error('Rewrite failed')
-  return res.json()
-}
-
 export async function downloadEditedCV(cvFile, result, format) {
   const binary = atob(cvFile.base64)
   const bytes = new Uint8Array(binary.length)
