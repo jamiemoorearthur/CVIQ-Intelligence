@@ -1,32 +1,34 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDropzone } from 'react-dropzone'
 import { reviewCV } from '../api/api'
-import Loading from '../components/Loading'
 import '../styles/Upload.css'
 
-// Converts a File object into a base64 string so we can store it in
-// sessionStorage and show a preview on the results page
+const STAGES = [
+  { label: 'Parsing CV', weight: 0.15 },
+  { label: 'Knowledge Base Matching', weight: 0.3 },
+  { label: 'ATS Evaluation', weight: 0.25 },
+  { label: 'Recruiter Feedback Generation', weight: 0.3 },
+]
+// Total estimated duration for a full simulated pass. Tuned to roughly
+// match typical response time — real completion always wins the race
+// (see markComplete), this is just what the UI shows while waiting.
+const ESTIMATED_TOTAL_MS = 14000
+
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
-    reader.onload = () => resolve(reader.result.split(',')[1]) // strip the "data:...;base64," prefix
+    reader.onload = () => resolve(reader.result.split(',')[1])
     reader.onerror = reject
     reader.readAsDataURL(file)
   })
 }
 
 function getErrorMessage(err) {
-  if (!err.response) {
-    return {
-      title: 'Connection problem',
-      message: "We couldn't reach the server. Check your connection and try again.",
-    }
-  }
+  if (!err.response) return { title: 'Connection problem', message: "We couldn't reach the server. Check your connection and try again." }
   const status = err.response.status
   const detail = err.response.data?.detail || ''
   const detailLower = detail.toLowerCase()
-
   if (status === 400) {
     if (detailLower.includes('unsupported file type')) return { title: 'Unsupported file type', message: 'Please upload your CV as a .pdf or .docx file.' }
     if (detailLower.includes('no text could be extracted')) return { title: "Couldn't read your CV", message: 'This looks like a scanned or image-based file. Please upload a text-based .pdf or .docx file instead.' }
@@ -34,7 +36,7 @@ function getErrorMessage(err) {
     if (detailLower.includes('disallowed content')) return { title: 'Content not allowed', message: "Your CV or job description contains content we can't process. Please review and try again." }
     return { title: 'Invalid submission', message: detail || 'Please check your CV and job description and try again.' }
   }
-  if (status >= 500) return { title: 'Server error', message: 'Something went wrong on our end while analysing your CV. Please try again in a moment.' }
+  if (status >= 500) return { title: 'Server error', message: 'Something went wrong on our end. Please try again in a moment.' }
   return { title: 'Something went wrong', message: detail || 'Please try again.' }
 }
 
@@ -43,13 +45,45 @@ function Upload() {
   const [jobDescription, setJobDescription] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [activeStage, setActiveStage] = useState(0)
+  const [stageComplete, setStageComplete] = useState(false)
   const navigate = useNavigate()
+  const timerRef = useRef(null)
+  const startRef = useRef(null)
+
+  // Cumulative weight thresholds, e.g. [0.15, 0.45, 0.7, 1.0] for the
+  // weights above — used to map elapsed-time fraction to a stage index.
+  const cumulative = STAGES.reduce((acc, s, i) => {
+    acc.push((acc[i - 1] || 0) + s.weight)
+    return acc
+  }, [])
+
+  useEffect(() => {
+    if (!loading) return
+    startRef.current = Date.now()
+    setActiveStage(0)
+    setStageComplete(false)
+    timerRef.current = setInterval(() => {
+      const elapsedFraction = (Date.now() - startRef.current) / ESTIMATED_TOTAL_MS
+      // Cap at the second-to-last stage while still waiting on the real
+      // response, so the UI never claims "done" before the API actually
+      // returns — the real completion handler advances it the rest of
+      // the way via markComplete().
+      const cappedFraction = Math.min(elapsedFraction, cumulative[cumulative.length - 2] ?? 0.99)
+      const idx = cumulative.findIndex(c => cappedFraction <= c)
+      setActiveStage(idx === -1 ? STAGES.length - 1 : idx)
+    }, 200)
+    return () => clearInterval(timerRef.current)
+  }, [loading])
+
+  const markComplete = () => {
+    clearInterval(timerRef.current)
+    setActiveStage(STAGES.length - 1)
+    setStageComplete(true)
+  }
 
   const onDrop = useCallback((acceptedFiles) => {
-    if (acceptedFiles.length > 0) {
-      setFile(acceptedFiles[0])
-      setError(null)
-    }
+    if (acceptedFiles.length > 0) { setFile(acceptedFiles[0]); setError(null) }
   }, [])
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -64,24 +98,17 @@ function Upload() {
   const handleSubmit = async () => {
     if (!file) return setError({ title: 'CV required', message: 'Please upload your CV first.' })
     if (!jobDescription.trim()) return setError({ title: 'Job description required', message: 'Please paste a job description.' })
-
     try {
       setLoading(true)
       setError(null)
-
-      // Run the API call and the base64 conversion at the same time so we
-      // don't add any extra waiting time for the user
       const [result, fileBase64] = await Promise.all([
         reviewCV(file, jobDescription),
         fileToBase64(file),
       ])
-
-      // Pass both the results AND the file data to the results page
+      markComplete()
+      await new Promise(r => setTimeout(r, 500)) // let the "complete" state register visually before we navigate away
       navigate('/results', {
-        state: {
-          result,
-          cvFile: { base64: fileBase64, type: file.type, name: file.name },
-        },
+        state: { result, cvFile: { base64: fileBase64, type: file.type, name: file.name }, jobDescription },
       })
     } catch (err) {
       setError(getErrorMessage(err))
@@ -91,91 +118,121 @@ function Upload() {
 
   if (loading) {
     return (
-      <div className="upload-page">
-        <nav className="navbar">
-          <div className="nav-inner">
-            <div className="logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-              <div className="logo-mark">IQ</div>
-              <span className="logo-text">CV<span className="logo-accent">IQ</span></span>
+      <div className="up-page">
+        <nav className="up-nav">
+          <div className="up-nav-inner">
+            <div className="up-logo" onClick={() => navigate('/')}>
+              <span className="up-logo-text">CV<span className="up-logo-accent">IQ</span></span>
             </div>
           </div>
         </nav>
-        <Loading />
+        <div className="up-loading-wrap">
+          <div className="up-eyebrow">Analysing</div>
+          <h2 className="up-loading-h2">Reading your CV</h2>
+          <p className="up-loading-sub">This usually takes under a minute. Matching your experience against the role.</p>
+
+          <div className="up-progress-track">
+            <div
+              className="up-progress-fill"
+              style={{ width: `${((activeStage + (stageComplete ? 1 : 0.5)) / STAGES.length) * 100}%` }}
+            />
+          </div>
+
+          <ol className="up-stage-list">
+            {STAGES.map((stage, i) => {
+              const done = i < activeStage || (i === activeStage && stageComplete)
+              const active = i === activeStage && !done
+              return (
+                <li key={stage.label} className={`up-stage ${done ? 'done' : ''} ${active ? 'active' : ''}`}>
+                  <span className="up-stage-marker">
+                    {done ? '✓' : active ? <span className="up-stage-spinner" /> : <span className="up-stage-dot" />}
+                  </span>
+                  {i < STAGES.length - 1 && <span className={`up-stage-line ${done ? 'done' : ''}`} />}
+                  <span className="up-stage-label">{stage.label}</span>
+                </li>
+              )
+            })}
+          </ol>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="upload-page">
-      <nav className="navbar">
-        <div className="nav-inner">
-          <div className="logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-            <div className="logo-mark">IQ</div>
-            <span className="logo-text">CV<span className="logo-accent">IQ</span></span>
+    <div className="up-page">
+      <nav className="up-nav">
+        <div className="up-nav-inner">
+          <div className="up-logo" onClick={() => navigate('/')}>
+            <span className="up-logo-text">CV<span className="up-logo-accent">IQ</span></span>
           </div>
-          <button className="back-btn" onClick={() => navigate('/')}>← Back to home</button>
+          <button className="up-back" onClick={() => navigate('/')}>← Back to home</button>
         </div>
       </nav>
 
-      <div className="upload-container">
-        <div className="upload-header">
-          <div className="hero-badge">✦ AI-Powered Review</div>
-          <h1>Review your CV</h1>
-          <p>Upload your CV and paste the job description. We'll analyse it and return structured feedback in seconds.</p>
+      <div className="up-container">
+        <div className="up-header">
+          <div className="up-eyebrow">CV Intelligence</div>
+          <h1 className="up-h1">Analyse your CV</h1>
+          <p className="up-sub">Upload your CV and paste the job description. We'll return structured feedback in under 60 seconds.</p>
         </div>
 
-        <div className="upload-form">
-          <div {...getRootProps()} className={`dropzone ${isDragActive ? 'active' : ''} ${file ? 'has-file' : ''}`}>
+        <div className="up-form">
+          <div className="up-privacy-note">
+            <div className="up-privacy-icon">ℹ</div>
+            <p>We recommend removing personal details such as your home address before uploading.</p>
+          </div>
+
+          <div {...getRootProps()} className={`up-dropzone ${isDragActive ? 'active' : ''} ${file ? 'has-file' : ''}`}>
             <input {...getInputProps()} />
-            <div className="dropzone-icon"><span>📄</span></div>
-            <p className="dropzone-title">{isDragActive ? 'Drop it here!' : 'Drag & drop your CV here'}</p>
-            <p className="dropzone-sub">or click to browse — .pdf or .docx</p>
-            <button className="btn-choose" type="button">Choose file</button>
+            <div className="up-dropzone-icon">📄</div>
+            <p className="up-dropzone-title">{isDragActive ? 'Drop it here' : 'Drag and drop your CV here'}</p>
+            <p className="up-dropzone-sub">or click to browse — .pdf or .docx</p>
+            <button className="up-btn-choose" type="button">Choose file</button>
           </div>
 
           {file && (
-            <div className="file-attached">
-              <span className="file-icon">📎</span>
-              <div className="file-info">
-                <span className="file-name">{file.name}</span>
-                <span className="file-size">{(file.size / 1024).toFixed(0)} KB — ready to review</span>
+            <div className="up-file-attached">
+              <div className="up-file-icon">📎</div>
+              <div className="up-file-info">
+                <span className="up-file-name">{file.name}</span>
+                <span className="up-file-size">{(file.size / 1024).toFixed(0)} KB — ready to analyse</span>
               </div>
-              <button className="file-remove" onClick={() => setFile(null)}>✕</button>
+              <button className="up-file-remove" onClick={() => setFile(null)}>✕</button>
             </div>
           )}
 
-          <div className="field">
-            <label htmlFor="job-desc">Job description</label>
+          <div className="up-field">
+            <label htmlFor="job-desc" className="up-label">Job description</label>
             <textarea
               id="job-desc"
+              className="up-textarea"
               placeholder="Paste the full job description here — the more detail the better..."
               value={jobDescription}
               onChange={(e) => setJobDescription(e.target.value)}
-              rows={8}
+              rows={9}
             />
-            <p className="field-hint">Tip: include the full job description for the most accurate feedback & We recommend removing personal information such as your home address, phone number, and date of birth before uploading your CV. This helps protect your privacy while allowing our AI to provide accurate feedback. .</p>
+            <p className="up-field-hint">Include the full job description for the most accurate keyword matching and feedback.</p>
           </div>
-          
+
           {error && (
-            <div className="error-msg">
-              <strong className="error-msg-title">{error.title}</strong>
-              <span className="error-msg-text">{error.message}</span>
+            <div className="up-error">
+              <strong className="up-error-title">{error.title}</strong>
+              <span className="up-error-text">{error.message}</span>
             </div>
           )}
 
-          <button className="btn-primary" onClick={handleSubmit} disabled={loading}>
+          <button className="up-btn-submit" onClick={handleSubmit} disabled={loading}>
             Analyse my CV →
           </button>
         </div>
       </div>
 
-      <footer className="footer">
-        <div className="footer-inner">
-          <div className="logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-            <div className="logo-mark">IQ</div>
-            <span className="logo-text">CV<span className="logo-accent">IQ</span></span>
+      <footer className="up-footer">
+        <div className="up-footer-inner">
+          <div className="up-logo" onClick={() => navigate('/')}>
+            <span className="up-logo-text">CV<span className="up-logo-accent">IQ</span></span>
           </div>
-          <p className="footer-text">Built with FastAPI, React & GPT-4o · © 2026 CVIQ</p>
+          <p className="up-footer-copy">© 2026 CVIQ Inc. · CV Intelligence Platform</p>
         </div>
       </footer>
     </div>
