@@ -1,22 +1,17 @@
-function SectionRecommendations({ recommendations }) {
-   if (!recommendations || recommendations.length === 0) return null
- 
-   return (
-     <div className="result-card">
-       <div className="result-card-header">
-         <div className="result-card-icon">🗂️</div>
-         <span className="result-card-title">Section recommendations</span>
-       </div>
-       <div className="result-card-body">
-         {recommendations.map((r, i) => (
-           <div className="sw-item" key={i}>
-             <span className="sw-tick" style={{ color: '#3b82f6' }}>→</span>
-             <span>{r}</span>
-           </div>
-         ))}
-       </div>
-     </div>
-   )
- }
- 
- export default SectionRecommendations
+import { motion } from 'framer-motion'
+import { fade } from '../utils/animations'
+
+export default function SectionRecommendations({ recommendations }) {
+  if (!recommendations?.length) return null
+  return (
+    <motion.section className="section" variants={fade}>
+      <div className="section-label">Structure</div>
+      <h2 className="section-h2">Section recommendations</h2>
+      <div className="recs-wrap">
+        {recommendations.map((r, i) => (
+          <div key={i} className="rec-card"><span className="rec-arrow">→</span><p className="rec-text">{r}</p></div>
+        ))}
+      </div>
+    </motion.section>
+  )
+}
