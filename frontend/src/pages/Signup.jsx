@@ -1,179 +1,85 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../utils/supabase'
 import '../styles/Auth.css'
 
-function Signup() {
+export default function Signup() {
   const navigate = useNavigate()
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    confirmPassword: '',
-  })
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
 
-  const handleChange = (e) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }))
-    setError(null)
-  }
-
-  const handleSubmit = async () => {
-    if (!formData.email.trim()) return setError({ title: 'Email required', message: 'Please enter your email address.' })
-
-    const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
-    if (!emailValid) return setError({ title: 'Invalid email', message: 'Please enter a valid email address.' })
-
-    if (!formData.password) return setError({ title: 'Password required', message: 'Please choose a password.' })
-    if (formData.password.length < 8) return setError({ title: 'Password too short', message: 'Your password must be at least 8 characters.' })
-
-    // Make sure the two password fields match
-    if (formData.password !== formData.confirmPassword) return setError({ title: "Passwords don't match", message: 'Please make sure both passwords are the same.' })
-
+  const handleSignup = async () => {
+    if (!email.trim() || !password.trim()) return setError('Please enter your email and a password.')
+    if (password.length < 8) return setError('Password must be at least 8 characters.')
     try {
       setLoading(true)
       setError(null)
-
-      // Sign up with Supabase — it creates the account and sends a confirmation email
-      const { data, error: authError } = await supabase.auth.signUp({
-        email: formData.email,
-        password: formData.password,
-      })
-
+      const { error: authError } = await supabase.auth.signUp({ email, password })
       if (authError) throw authError
-
-      // Supabase may require email confirmation depending on project settings —
-      // show a success message and let the user know to check their inbox
       setSuccess(true)
     } catch (err) {
-      setError({
-        title: 'Signup failed',
-        message: err.message || 'Something went wrong. Please try again.',
-      })
+      setError(err.message || 'Sign up failed. Please try again.')
     } finally {
       setLoading(false)
     }
   }
 
-  if (success) {
-    return (
-      <div className="auth-page">
-        <nav className="navbar">
-          <div className="nav-inner">
-            <div className="logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-              <div className="logo-mark">IQ</div>
-              <span className="logo-text">CV<span className="logo-accent">IQ</span></span>
-            </div>
-          </div>
-        </nav>
-        <div className="auth-container">
-          <div className="auth-card" style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '40px', marginBottom: '16px' }}>✉️</div>
-            <h1 style={{ fontSize: '24px', fontWeight: 800, color: '#fff', marginBottom: '12px' }}>Check your email</h1>
-            <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '14px', lineHeight: 1.6, marginBottom: '24px' }}>
-              We've sent a confirmation link to <strong style={{ color: '#fff' }}>{formData.email}</strong>. Click it to activate your account then log in.
-            </p>
-            <button className="btn-primary" onClick={() => navigate('/login')}>
-              Go to login →
-            </button>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className="auth-page">
-      <nav className="navbar">
-        <div className="nav-inner">
-          <div className="logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-            <div className="logo-mark">IQ</div>
-            <span className="logo-text">CV<span className="logo-accent">IQ</span></span>
+      <nav className="auth-nav">
+        <div className="auth-nav-inner">
+          <div className="auth-logo" onClick={() => navigate('/')}>
+            <span className="auth-logo-text">CV<span className="auth-logo-accent">IQ</span></span>
           </div>
+          <Link to="/login" className="auth-nav-link">Sign in</Link>
         </div>
       </nav>
 
       <div className="auth-container">
         <div className="auth-card">
-          <div className="auth-header">
-            <div className="hero-badge">✦ Get started free</div>
-            <h1>Create your account</h1>
-            <p>Join thousands of job seekers using CVIQ to land more interviews.</p>
-          </div>
-
-          <div className="auth-form">
-            <div className="field">
-              <label htmlFor="email">Email address</label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="Enter your email"
-                value={formData.email}
-                onChange={handleChange}
-                autoComplete="email"
-              />
+          {success ? (
+            <div className="auth-success">
+              <h3>Check your inbox</h3>
+              <p>We've sent a confirmation link to <strong>{email}</strong>. Click it to activate your account and get started.</p>
             </div>
-
-            <div className="field">
-              <label htmlFor="password">Password</label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                placeholder="Choose a password (min. 8 characters)"
-                value={formData.password}
-                onChange={handleChange}
-                autoComplete="new-password"
-              />
-            </div>
-
-            <div className="field">
-              <label htmlFor="confirmPassword">Confirm password</label>
-              <input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                placeholder="Repeat your password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                autoComplete="new-password"
-              />
-            </div>
-
-            {error && (
-              <div className="error-msg">
-                <strong className="error-msg-title">{error.title}</strong>
-                <span className="error-msg-text">{error.message}</span>
+          ) : (
+            <>
+              <div className="auth-eyebrow">Get started free</div>
+              <h1 className="auth-h1">Create your account</h1>
+              <p className="auth-sub">Start analysing your CV in under 60 seconds. No credit card required.</p>
+              <div className="auth-form">
+                <div className="auth-field">
+                  <label className="auth-label" htmlFor="email">Email address</label>
+                  <input id="email" className="auth-input" type="email" placeholder="you@example.com" value={email} onChange={e => setEmail(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSignup()} autoComplete="email" />
+                </div>
+                <div className="auth-field">
+                  <label className="auth-label" htmlFor="password">Password</label>
+                  <input id="password" className="auth-input" type="password" placeholder="At least 8 characters" value={password} onChange={e => setPassword(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSignup()} autoComplete="new-password" />
+                </div>
+                {error && <div className="auth-error">{error}</div>}
+                <button className="auth-btn-submit" onClick={handleSignup} disabled={loading}>
+                  {loading ? 'Creating account...' : 'Create free account'}
+                </button>
               </div>
-            )}
-
-            <button className="btn-primary" onClick={handleSubmit} disabled={loading}>
-              {loading ? 'Creating account...' : 'Create account →'}
-            </button>
-
-            <p className="auth-switch">
-              Already have an account?{' '}
-              <button className="auth-switch-btn" onClick={() => navigate('/login')}>
-                Log in
-              </button>
-            </p>
-          </div>
+              <div className="auth-footer-text">
+                Already have an account? <Link to="/login">Sign in</Link>
+              </div>
+            </>
+          )}
         </div>
       </div>
 
-      <footer className="footer">
-        <div className="footer-inner">
-          <div className="logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-            <div className="logo-mark">IQ</div>
-            <span className="logo-text">CV<span className="logo-accent">IQ</span></span>
+      <footer className="auth-page-footer">
+        <div className="auth-page-footer-inner">
+          <div className="auth-logo" onClick={() => navigate('/')}>
+            <span className="auth-logo-text">CV<span className="auth-logo-accent">IQ</span></span>
           </div>
-          <p className="footer-text">Built with FastAPI, React & GPT-4o · © 2026 CVIQ</p>
+          <p className="auth-page-footer-copy">© 2026 CVIQ Inc. · CV Intelligence Platform</p>
         </div>
       </footer>
     </div>
   )
 }
-
-export default Signup
