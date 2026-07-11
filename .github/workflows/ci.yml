@@ -75,12 +75,12 @@ jobs:
       - name: Smoke test
         run: |
           for i in $(seq 1 12); do
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://cvreview-api.duckdns.org/health)
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" --resolve cvreview-api.duckdns.org:443:129.159.222.241 https://cvreview-api.duckdns.org/health)
             if [ "$STATUS" = "200" ]; then
               echo "Health check passed (attempt $i)"
               exit 0
             fi
-            echo "Attempt $i/12: got HTTP $STATUS — retrying in 5s"
+            echo "Attempt $i/12: got HTTP $STATUS - retrying in 5s"
             sleep 5
           done
           echo "Smoke test failed: /health did not return 200 within 60s"

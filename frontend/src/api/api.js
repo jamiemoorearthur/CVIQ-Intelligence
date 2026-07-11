@@ -33,6 +33,16 @@ export async function chatWithCV({ message, cvText, jobDescription, history }) {
   return res.json()
 }
 
+export async function rewriteBullet(bullet, jobDescription) {
+  const res = await fetch(`${BASE_URL}/rewrite-bullet`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ bullet, job_description: jobDescription }),
+  })
+  if (!res.ok) throw new Error('Rewrite failed')
+  return res.json()
+}
+
 export async function downloadEditedCV(cvFile, result, format) {
   const binary = atob(cvFile.base64)
   const bytes = new Uint8Array(binary.length)
