@@ -31,6 +31,8 @@ export async function chatWithCV({ message, cvText, jobDescription, history }) {
   })
   if (!res.ok) throw new Error('Chat failed')
   return res.json()
+}
+
 export async function downloadEditedCV(cvFile, result, format) {
   const binary = atob(cvFile.base64)
   const bytes = new Uint8Array(binary.length)
