@@ -44,7 +44,7 @@ def _check_output_gate(review: dict) -> dict:
 
 def generate_review(cv_text: str, job_description: str, context_chunks: list[str], trace=None, tier: str = "paid") -> dict:
     client, model = get_llm_client(tier)
-    is_openai = tier != "free"
+    is_openai = settings.openai_api_key and model == settings.openai_model
 
     user_prompt = build_review_prompt(cv_text, job_description, context_chunks)
     messages = [
@@ -70,7 +70,7 @@ def generate_review(cv_text: str, job_description: str, context_chunks: list[str
             messages=messages,
             temperature=0.2,
             response_format={"type": "json_object"},
-            max_tokens=_MAX_OUTPUT_TOKENS_PAID if tier == "paid" else _MAX_OUTPUT_TOKENS_FREE,
+            max_tokens=_MAX_OUTPUT_TOKENS_PAID,
         )
     except Exception as e:
         try:
