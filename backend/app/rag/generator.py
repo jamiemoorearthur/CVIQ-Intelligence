@@ -13,7 +13,8 @@ _LATENCY_ALERT_THRESHOLD_MS = 8_000  # alert if inference alone exceeds 8 s
 # Section 2 expanded the schema significantly (subscores, missing_points, line_feedback,
 # alternatives, summary_improvement). Full response now runs 3000-5000 tokens.
 # 6000 gives safe headroom without risking truncated JSON.
-_MAX_OUTPUT_TOKENS = 6000
+_MAX_OUTPUT_TOKENS_PAID = 6000
+_MAX_OUTPUT_TOKENS_FREE = 1500
 
 # Caching note: OpenAI automatic prompt caching applies to prefixes >1024 tokens.
 # The system prompt alone is well under that, and every user prompt is unique
@@ -69,7 +70,7 @@ def generate_review(cv_text: str, job_description: str, context_chunks: list[str
             messages=messages,
             temperature=0.2,
             response_format={"type": "json_object"},
-            max_tokens=_MAX_OUTPUT_TOKENS,
+            max_tokens=_MAX_OUTPUT_TOKENS_PAID if tier == "paid" else _MAX_OUTPUT_TOKENS_FREE,
         )
     except Exception as e:
         try:
