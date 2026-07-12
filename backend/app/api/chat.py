@@ -1,4 +1,5 @@
 import json
+import asyncio
 from fastapi import APIRouter, HTTPException
 from app.Models.cv_models import (
     ChatRequest, ChatResponse,
@@ -49,7 +50,8 @@ async def chat(body: ChatRequest):
 
     try:
         client, model = get_llm_client(tier="free")
-        completion = client.chat.completions.create(
+        completion = await asyncio.to_thread(
+            client.chat.completions.create,
             model=model,
             messages=messages,
             max_tokens=_CHAT_MAX_TOKENS,
@@ -82,7 +84,8 @@ Rules:
 
     try:
         client, model = get_llm_client(tier="free")
-        completion = client.chat.completions.create(
+        completion = await asyncio.to_thread(
+            client.chat.completions.create,
             model=model,
             messages=[{"role": "user", "content": prompt}],
             max_tokens=_REWRITE_MAX_TOKENS,

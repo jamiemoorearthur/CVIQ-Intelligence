@@ -1,4 +1,5 @@
 import re
+import asyncio
 from typing import Optional
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends
 
@@ -95,7 +96,7 @@ async def review_cv(
     # ── Pipeline ──────────────────────────────────────────────────────────────
     tier = get_user_tier(user)
     try:
-        raw_review = run_review_pipeline(cv_text, job_description, tier=tier)
+        raw_review = await asyncio.to_thread(run_review_pipeline, cv_text, job_description, tier=tier)
     except CVReviewerError as e:
         raise HTTPException(status_code=500, detail=str(e))
 
