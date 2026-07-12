@@ -64,8 +64,8 @@ jobs:
           script: |
             cd ~/Resume-Review-Engine && git pull
             cd backend && docker build -t cv-reviewer .
-            docker stop cv-reviewer || true
-            docker rm cv-reviewer || true
+            docker stop cv-reviewer cviq-api || true
+            docker rm cv-reviewer cviq-api || true
             docker run -d --name cv-reviewer --restart unless-stopped \
               --network=host \
               -v /app/data/chroma:/app/data/chroma \
