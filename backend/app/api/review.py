@@ -1,11 +1,13 @@
 import re
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException
+from typing import Optional
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends
 
 from app.ingestion.loader import load_text_from_bytes
 from app.rag.pipeline import run_review_pipeline
 from app.review.scorer import validate_and_clean
 from app.Models.cv_models import ReviewResponse
 from app.core.exceptions import CVReviewerError
+from app.core.auth import get_current_user, get_user_tier
 
 router = APIRouter()
 
@@ -74,6 +76,7 @@ def _detect_pii(text: str) -> None:
 async def review_cv(
     cv_file: UploadFile = File(...),
     job_description: str = Form(...),
+    user: Optional[dict] = Depends(get_current_user),
 ):
     file_bytes = await cv_file.read()
 
@@ -90,8 +93,7 @@ async def review_cv(
     _detect_pii(cv_text)
 
     # ── Pipeline ──────────────────────────────────────────────────────────────
-    # tier will come from Stripe subscription check once billing is implemented
-    tier = "paid"
+    tier = get_user_tier(user)
     try:
         raw_review = run_review_pipeline(cv_text, job_description, tier=tier)
     except CVReviewerError as e:

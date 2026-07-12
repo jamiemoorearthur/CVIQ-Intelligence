@@ -1,6 +1,9 @@
 import os
 import stripe
-from fastapi import APIRouter, HTTPException
+from typing import Optional
+from fastapi import APIRouter, HTTPException, Depends
+
+from app.core.auth import get_current_user
 
 router = APIRouter()
 
@@ -22,7 +25,7 @@ def get_client():
 
 
 @router.post("/create-checkout-session")
-async def create_checkout_session():
+async def create_checkout_session(user: Optional[dict] = Depends(get_current_user)):
 
     if not PRICE_ID:
         raise HTTPException(
@@ -33,22 +36,20 @@ async def create_checkout_session():
     client = get_client()
 
     try:
-        session = client.checkout.sessions.create(
-            params={
-                "ui_mode": "embedded",
-                "line_items": [
-                    {
-                        "price": PRICE_ID,
-                        "quantity": 1,
-                    }
-                ],
-                "mode": "subscription",
-                "return_url": (
-                    f"{YOUR_DOMAIN}/return.html"
-                    "?session_id={{CHECKOUT_SESSION_ID}}"
-                ),
-            }
-        )
+        params = {
+            "ui_mode": "embedded",
+            "line_items": [{"price": PRICE_ID, "quantity": 1}],
+            "mode": "subscription",
+            "return_url": (
+                f"{YOUR_DOMAIN}/return.html"
+                "?session_id={{CHECKOUT_SESSION_ID}}"
+            ),
+        }
+        if user:
+            params["client_reference_id"] = user["id"]
+            params["customer_email"] = user["email"]
+
+        session = client.checkout.sessions.create(params=params)
 
         return {
             "clientSecret": session.client_secret

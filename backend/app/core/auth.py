@@ -42,3 +42,24 @@ async def require_user(user: Optional[dict] = Depends(get_current_user)) -> dict
     if not user:
         raise HTTPException(status_code=401, detail="Authentication required.")
     return user
+
+
+def get_user_tier(user: Optional[dict]) -> str:
+    """Return 'paid' if the user has an active pro subscription, otherwise 'free'."""
+    if not user:
+        return "free"
+    supabase = _get_supabase()
+    if not supabase:
+        return "free"
+    try:
+        result = (
+            supabase.table("user_profiles")
+            .select("is_pro")
+            .eq("user_id", user["id"])
+            .execute()
+        )
+        if result.data and result.data[0].get("is_pro"):
+            return "paid"
+    except Exception as e:
+        print(f"[auth] tier check failed for user={user['id']}: {e}")
+    return "free"
