@@ -3,6 +3,8 @@ import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../utils/supabase'
 import '../styles/Auth.css'
 
+const INTENDED_PLAN_KEY = 'cviq:intended-plan'
+
 export default function Signup() {
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
@@ -10,6 +12,8 @@ export default function Signup() {
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
+  const [hasSession, setHasSession] = useState(false)
+  const [planChoice, setPlanChoice] = useState(null) // 'free' | 'pro' | null
 
   const handleSignup = async () => {
     if (!email.trim() || !password.trim()) return setError('Please enter your email and a password.')
@@ -17,14 +21,28 @@ export default function Signup() {
     try {
       setLoading(true)
       setError(null)
-      const { error: authError } = await supabase.auth.signUp({ email, password })
+      const { data, error: authError } = await supabase.auth.signUp({ email, password })
       if (authError) throw authError
       setSuccess(true)
+      // If email confirmation is off, Supabase returns a session immediately.
+      // If it's on, data.session will be null until the user confirms.
+      setHasSession(!!data.session)
     } catch (err) {
       setError(err.message || 'Sign up failed. Please try again.')
     } finally {
       setLoading(false)
     }
+  }
+
+  const choosePlan = (plan) => {
+    setPlanChoice(plan)
+    if (hasSession) {
+      // Already logged in (email confirmation disabled) — go straight there
+      navigate(plan === 'pro' ? '/pricing' : '/upload')
+      return
+    }
+    
+    try { sessionStorage.setItem(INTENDED_PLAN_KEY, plan) } catch {}
   }
 
   return (
@@ -41,10 +59,44 @@ export default function Signup() {
       <div className="auth-container">
         <div className="auth-card">
           {success ? (
-            <div className="auth-success">
-              <h3>Check your inbox</h3>
-              <p>We've sent a confirmation link to <strong>{email}</strong>. Click it to activate your account and get started.</p>
-            </div>
+            hasSession ? (
+              <div className="auth-success">
+                <h3>You're all set</h3>
+                <p>Choose how you'd like to get started.</p>
+                <div className="auth-plan-choice">
+                  <button className="auth-plan-btn" onClick={() => choosePlan('free')}>
+                    <span className="auth-plan-btn-title">Continue Free</span>
+                    <span className="auth-plan-btn-sub">5 CV reviews a month, no card needed</span>
+                  </button>
+                  <button className="auth-plan-btn auth-plan-btn-pro" onClick={() => choosePlan('pro')}>
+                    <span className="auth-plan-btn-title">Continue to Pro — £15/mo</span>
+                    <span className="auth-plan-btn-sub">Unlimited reviews, AI rewrites, full ATS scan</span>
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="auth-success">
+                <h3>Check your inbox</h3>
+                <p>We've sent a confirmation link to <strong>{email}</strong>. Click it to activate your account, then sign in below.</p>
+                {!planChoice ? (
+                  <div className="auth-plan-choice">
+                    <button className="auth-plan-btn" onClick={() => choosePlan('free')}>
+                      <span className="auth-plan-btn-title">Continue Free</span>
+                      <span className="auth-plan-btn-sub">5 CV reviews a month, no card needed</span>
+                    </button>
+                    <button className="auth-plan-btn auth-plan-btn-pro" onClick={() => choosePlan('pro')}>
+                      <span className="auth-plan-btn-title">Continue to Pro — £15/mo</span>
+                      <span className="auth-plan-btn-sub">Unlimited reviews, AI rewrites, full ATS scan</span>
+                    </button>
+                  </div>
+                ) : (
+                  <p className="auth-plan-confirmed">
+                    Got it — once you confirm your email, sign in and we'll take you straight to {planChoice === 'pro' ? 'checkout' : 'your dashboard'}.
+                  </p>
+                )}
+                <Link to="/login" className="auth-btn-submit auth-success-login-link">Go to sign in</Link>
+              </div>
+            )
           ) : (
             <>
               <div className="auth-eyebrow">Get started free</div>
