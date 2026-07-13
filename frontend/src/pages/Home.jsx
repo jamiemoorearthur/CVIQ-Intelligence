@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import Testimonials from '../components/Testimonials'
 import '../styles/App.css'
 
+
 function useCountUp(from, to, duration, start) {
   const [value, setValue] = useState(from)
   useEffect(() => {
@@ -430,7 +431,7 @@ export default function Home() {
               <li className="b-pricing-no">CV download</li>
               <li className="b-pricing-no">AI-rewritten CV</li>
             </ul>
-            <button className="b-btn-outline-full" onClick={() => navigate('/signup')}>Get started free</button>
+            <button className="b-btn-outline-full" onClick={() => navigate('/pricing')}>Start Pro — £15/mo</button>
           </div>
           <div className="b-pricing-card b-pricing-pro reveal" style={{ transitionDelay: '0.1s' }}>
             <div className="b-pricing-badge">Most popular</div>
