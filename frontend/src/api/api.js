@@ -1,10 +1,18 @@
 const BASE_URL = 'https://cvreview-api.duckdns.org'
 
-export async function reviewCV(file, jobDescription) {
+function authHeaders(token) {
+  return token ? { Authorization: `Bearer ${token}` } : {}
+}
+
+export async function reviewCV(file, jobDescription, token) {
   const formData = new FormData()
   formData.append('cv_file', file)
   formData.append('job_description', jobDescription)
-  const res = await fetch(`${BASE_URL}/review`, { method: 'POST', body: formData })
+  const res = await fetch(`${BASE_URL}/review`, {
+    method: 'POST',
+    headers: authHeaders(token),
+    body: formData,
+  })
   if (!res.ok) {
     const err = await res.json().catch(() => ({}))
     const error = new Error(err.detail || 'Review failed')
@@ -14,36 +22,40 @@ export async function reviewCV(file, jobDescription) {
   return res.json()
 }
 
-export async function atsPreview(file, jobDescription) {
+export async function atsPreview(file, jobDescription, token) {
   const formData = new FormData()
   formData.append('cv_file', file)
   formData.append('job_description', jobDescription)
-  const res = await fetch(`${BASE_URL}/ats-preview`, { method: 'POST', body: formData })
+  const res = await fetch(`${BASE_URL}/ats-preview`, {
+    method: 'POST',
+    headers: authHeaders(token),
+    body: formData,
+  })
   if (!res.ok) throw new Error('ATS preview failed')
   return res.json()
 }
 
-export async function chatWithCV({ message, cvText, jobDescription, history }) {
+export async function chatWithCV({ message, cvText, jobDescription, history, token }) {
   const res = await fetch(`${BASE_URL}/chat`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...authHeaders(token) },
     body: JSON.stringify({ message, cv_text: cvText, job_description: jobDescription, history }),
   })
   if (!res.ok) throw new Error('Chat failed')
   return res.json()
 }
 
-export async function rewriteBullet(bullet, jobDescription) {
+export async function rewriteBullet({ bullet, jobDescription, token }) {
   const res = await fetch(`${BASE_URL}/rewrite-bullet`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...authHeaders(token) },
     body: JSON.stringify({ bullet, job_description: jobDescription }),
   })
   if (!res.ok) throw new Error('Rewrite failed')
   return res.json()
 }
 
-export async function downloadEditedCV(cvFile, result, format) {
+export async function downloadEditedCV(cvFile, result, format, token) {
   const binary = atob(cvFile.base64)
   const bytes = new Uint8Array(binary.length)
   for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
@@ -54,7 +66,11 @@ export async function downloadEditedCV(cvFile, result, format) {
   formData.append('suggested_bullets', JSON.stringify(result.suggested_bullets || []))
   formData.append('missing_keywords', JSON.stringify(result.missing_keywords || []))
   formData.append('section_recommendations', JSON.stringify(result.section_recommendations || []))
-  const res = await fetch(`${BASE_URL}/download?format=${format}`, { method: 'POST', body: formData })
+  const res = await fetch(`${BASE_URL}/download?format=${format}`, {
+    method: 'POST',
+    headers: authHeaders(token),
+    body: formData,
+  })
   if (!res.ok) throw new Error('Download failed')
   const fileBlob = await res.blob()
   const url = URL.createObjectURL(fileBlob)
