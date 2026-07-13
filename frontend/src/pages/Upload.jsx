@@ -2,6 +2,8 @@ import { useState, useCallback, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDropzone } from 'react-dropzone'
 import { reviewCV } from '../api/api'
+import { useAuth } from '../utils/useAuth'
+import { supabase } from '../utils/supabase'
 import '../styles/Upload.css'
 
 const STAGES = [
@@ -10,10 +12,7 @@ const STAGES = [
   { label: 'ATS Evaluation', weight: 0.25 },
   { label: 'Recruiter Feedback Generation', weight: 0.3 },
 ]
-// Total estimated duration for a full simulated pass. Tuned to roughly
-// match typical response time — real completion always wins the race
-// (see markComplete), this is just what the UI shows while waiting.
-const ESTIMATED_TOTAL_MS = 50000
+const ESTIMATED_TOTAL_MS = 14000
 
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
@@ -40,19 +39,36 @@ function getErrorMessage(err) {
   return { title: 'Something went wrong', message: detail || 'Please try again.' }
 }
 
-function Upload() {
+export default function Upload() {
   const [file, setFile] = useState(null)
   const [jobDescription, setJobDescription] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [activeStage, setActiveStage] = useState(0)
   const [stageComplete, setStageComplete] = useState(false)
+  const [paymentSuccess, setPaymentSuccess] = useState(false)
   const navigate = useNavigate()
   const timerRef = useRef(null)
   const startRef = useRef(null)
+  const { user, loading: authLoading } = useAuth()
 
-  // Cumulative weight thresholds, e.g. [0.15, 0.45, 0.7, 1.0] for the
-  // weights above — used to map elapsed-time fraction to a stage index.
+  // ── Auth gate ─────────────────────────────────────────────────────────────
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate('/login', { state: { from: '/upload' } })
+    }
+  }, [user, authLoading, navigate])
+
+  // ── Payment success banner ────────────────────────────────────────────────
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('payment') === 'success') {
+      setPaymentSuccess(true)
+      window.history.replaceState({}, '', '/upload')
+    }
+  }, [])
+
+  // ── Loading stages ────────────────────────────────────────────────────────
   const cumulative = STAGES.reduce((acc, s, i) => {
     acc.push((acc[i - 1] || 0) + s.weight)
     return acc
@@ -65,10 +81,6 @@ function Upload() {
     setStageComplete(false)
     timerRef.current = setInterval(() => {
       const elapsedFraction = (Date.now() - startRef.current) / ESTIMATED_TOTAL_MS
-      // Cap at the second-to-last stage while still waiting on the real
-      // response, so the UI never claims "done" before the API actually
-      // returns — the real completion handler advances it the rest of
-      // the way via markComplete().
       const cappedFraction = Math.min(elapsedFraction, cumulative[cumulative.length - 2] ?? 0.99)
       const idx = cumulative.findIndex(c => cappedFraction <= c)
       setActiveStage(idx === -1 ? STAGES.length - 1 : idx)
@@ -101,12 +113,16 @@ function Upload() {
     try {
       setLoading(true)
       setError(null)
+
+      const { data: { session } } = await supabase.auth.getSession()
+      const token = session?.access_token
+
       const [result, fileBase64] = await Promise.all([
-        reviewCV(file, jobDescription),
+        reviewCV(file, jobDescription, token),
         fileToBase64(file),
       ])
       markComplete()
-      await new Promise(r => setTimeout(r, 500)) // let the "complete" state register visually before we navigate away
+      await new Promise(r => setTimeout(r, 500))
       navigate('/results', {
         state: { result, cvFile: { base64: fileBase64, type: file.type, name: file.name }, jobDescription },
       })
@@ -115,6 +131,8 @@ function Upload() {
       setLoading(false)
     }
   }
+
+  if (authLoading) return null
 
   if (loading) {
     return (
@@ -130,14 +148,9 @@ function Upload() {
           <div className="up-eyebrow">Analysing</div>
           <h2 className="up-loading-h2">Reading your CV</h2>
           <p className="up-loading-sub">This usually takes under a minute. Matching your experience against the role.</p>
-
           <div className="up-progress-track">
-            <div
-              className="up-progress-fill"
-              style={{ width: `${((activeStage + (stageComplete ? 1 : 0.5)) / STAGES.length) * 100}%` }}
-            />
+            <div className="up-progress-fill" style={{ width: `${((activeStage + (stageComplete ? 1 : 0.5)) / STAGES.length) * 100}%` }} />
           </div>
-
           <ol className="up-stage-list">
             {STAGES.map((stage, i) => {
               const done = i < activeStage || (i === activeStage && stageComplete)
@@ -160,12 +173,22 @@ function Upload() {
 
   return (
     <div className="up-page">
+      {paymentSuccess && (
+        <div className="up-success-banner">
+          <span>You're now on Pro. All features are unlocked.</span>
+          <button onClick={() => setPaymentSuccess(false)}>✕</button>
+        </div>
+      )}
+
       <nav className="up-nav">
         <div className="up-nav-inner">
           <div className="up-logo" onClick={() => navigate('/')}>
             <span className="up-logo-text">CV<span className="up-logo-accent">IQ</span></span>
           </div>
-          <button className="up-back" onClick={() => navigate('/')}>← Back to home</button>
+          <div className="up-nav-right">
+            <button className="up-back" onClick={() => navigate('/')}>← Back to home</button>
+            <button className="up-nav-signout" onClick={async () => { await supabase.auth.signOut(); navigate('/') }}>Sign out</button>
+          </div>
         </div>
       </nav>
 
@@ -238,5 +261,3 @@ function Upload() {
     </div>
   )
 }
-
-export default Upload
