@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
+    "@stripe/react-stripe-js": "^6.7.0",
+    "@stripe/stripe-js": "^9.9.0",
     "@supabase/supabase-js": "^2.108.2",
     "axios": "^1.16.1",
     "clsx": "^2.1.1",
