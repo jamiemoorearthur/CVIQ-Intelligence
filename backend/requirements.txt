@@ -3,7 +3,7 @@ uvicorn[standard]==0.32.1
 python-dotenv==1.2.2
 pydantic==2.10.4
 pydantic-settings==2.7.0
-setuptools==82.0.1
+setuptools==83.0.0
 wheel==0.47.0
 python-multipart==0.0.31
 pypdf==6.13.3
