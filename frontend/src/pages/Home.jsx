@@ -443,7 +443,10 @@ export default function Home() {
               <li className="b-pricing-no">CV download</li>
               <li className="b-pricing-no">AI-rewritten CV</li>
             </ul>
-            <button className="b-btn-outline-full" onClick={() => navigate(user ? '/pricing' : '/signup')}>Start Pro — £15/mo</button>
+            <button className="b-btn-outline-full" onClick={() => {
+              if (user) { navigate('/pricing') }
+              else { try { sessionStorage.setItem('cviq:intended-plan', 'pro') } catch {}; navigate('/signup') }
+            }}>Start Pro — £15/mo</button>
           </div>
           <div className="b-pricing-card b-pricing-pro reveal" style={{ transitionDelay: '0.1s' }}>
             <div className="b-pricing-badge">Most popular</div>
@@ -458,7 +461,10 @@ export default function Home() {
               <li className="b-pricing-yes">Download improved CV (.docx & PDF)</li>
               <li className="b-pricing-yes">Full AI-rewritten CV</li>
             </ul>
-            <button className="b-btn-primary-full" onClick={() => navigate(user ? '/pricing' : '/signup')}>Start Pro — £15/mo</button>
+            <button className="b-btn-primary-full" onClick={() => {
+              if (user) { navigate('/pricing') }
+              else { try { sessionStorage.setItem('cviq:intended-plan', 'pro') } catch {}; navigate('/signup') }
+            }}>Start Pro — £15/mo</button>
           </div>
         </div>
       </section>
