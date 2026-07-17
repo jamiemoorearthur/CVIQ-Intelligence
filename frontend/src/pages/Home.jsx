@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Testimonials from '../components/Testimonials'
+import { useAuth } from '../utils/useAuth'
 import '../styles/App.css'
 
 
@@ -218,6 +219,7 @@ function CVBeforeAfter() {
 export default function Home() {
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
+  const { user } = useAuth()
 
   useScrollReveal('.reveal')
 
@@ -237,8 +239,14 @@ export default function Home() {
             <a href="#pricing">Pricing</a>
           </div>
           <div className="b-nav-right">
-            <button className="b-btn-ghost" onClick={() => navigate('/login')}>Log in</button>
-            <button className="b-btn-nav-cta" onClick={() => navigate('/signup')}>Get started free</button>
+            {user ? (
+              <button className="b-btn-nav-cta" onClick={() => navigate('/upload')}>Go to upload</button>
+            ) : (
+              <>
+                <button className="b-btn-ghost" onClick={() => navigate('/login')}>Log in</button>
+                <button className="b-btn-nav-cta" onClick={() => navigate('/signup')}>Get started free</button>
+              </>
+            )}
           </div>
           <button className="b-burger" onClick={() => setMenuOpen(m => !m)} aria-label="Menu">
             <span /><span /><span />
@@ -431,7 +439,7 @@ export default function Home() {
               <li className="b-pricing-no">CV download</li>
               <li className="b-pricing-no">AI-rewritten CV</li>
             </ul>
-            <button className="b-btn-outline-full" onClick={() => navigate('/pricing')}>Start Pro — £15/mo</button>
+            <button className="b-btn-outline-full" onClick={() => navigate(user ? '/pricing' : '/signup')}>Start Pro — £15/mo</button>
           </div>
           <div className="b-pricing-card b-pricing-pro reveal" style={{ transitionDelay: '0.1s' }}>
             <div className="b-pricing-badge">Most popular</div>
@@ -446,7 +454,7 @@ export default function Home() {
               <li className="b-pricing-yes">Download improved CV (.docx & PDF)</li>
               <li className="b-pricing-yes">Full AI-rewritten CV</li>
             </ul>
-            <button className="b-btn-primary-full" onClick={() => navigate('/signup')}>Start Pro — £15/mo</button>
+            <button className="b-btn-primary-full" onClick={() => navigate(user ? '/pricing' : '/signup')}>Start Pro — £15/mo</button>
           </div>
         </div>
       </section>

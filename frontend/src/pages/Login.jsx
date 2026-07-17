@@ -29,7 +29,16 @@ export default function Login() {
 
       if (authError) throw authError
 
-      navigate('/upload')
+      // Respect intended destination from Pricing page or signup flow
+      let dest = location.state?.from || '/upload'
+      try {
+        const plan = sessionStorage.getItem('cviq:intended-plan')
+        if (plan === 'pro') {
+          sessionStorage.removeItem('cviq:intended-plan')
+          dest = '/pricing'
+        }
+      } catch {}
+      navigate(dest)
     } catch (err) {
       setError(
         err.message ||
