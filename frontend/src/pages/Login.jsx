@@ -32,9 +32,9 @@ export default function Login() {
       // Respect intended destination from Pricing page or signup flow
       let dest = location.state?.from || '/upload'
       try {
-        const plan = sessionStorage.getItem('cviq:intended-plan')
+        const plan = localStorage.getItem('cviq:intended-plan')
         if (plan === 'pro') {
-          sessionStorage.removeItem('cviq:intended-plan')
+          localStorage.removeItem('cviq:intended-plan')
           dest = '/pricing'
         }
       } catch {}

@@ -224,6 +224,20 @@ export default function Home() {
 
   useScrollReveal('.reveal')
 
+  // After email confirmation, Supabase redirects back here with the user logged in.
+  // If they came from a "Start Pro" CTA, send them straight to /pricing.
+  useEffect(() => {
+    if (user) {
+      try {
+        const plan = localStorage.getItem('cviq:intended-plan')
+        if (plan === 'pro') {
+          localStorage.removeItem('cviq:intended-plan')
+          navigate('/pricing')
+        }
+      } catch {}
+    }
+  }, [user, navigate])
+
   return (
     <div className="b-page">
 
@@ -445,7 +459,7 @@ export default function Home() {
             </ul>
             <button className="b-btn-outline-full" onClick={() => {
               if (user) { navigate('/pricing') }
-              else { try { sessionStorage.setItem('cviq:intended-plan', 'pro') } catch {}; navigate('/signup') }
+              else { try { localStorage.setItem('cviq:intended-plan', 'pro') } catch {}; navigate('/signup') }
             }}>Start Pro — £15/mo</button>
           </div>
           <div className="b-pricing-card b-pricing-pro reveal" style={{ transitionDelay: '0.1s' }}>
@@ -463,7 +477,7 @@ export default function Home() {
             </ul>
             <button className="b-btn-primary-full" onClick={() => {
               if (user) { navigate('/pricing') }
-              else { try { sessionStorage.setItem('cviq:intended-plan', 'pro') } catch {}; navigate('/signup') }
+              else { try { localStorage.setItem('cviq:intended-plan', 'pro') } catch {}; navigate('/signup') }
             }}>Start Pro — £15/mo</button>
           </div>
         </div>

@@ -23,9 +23,19 @@ export default function Signup() {
       setError(null)
       const { data, error: authError } = await supabase.auth.signUp({ email, password })
       if (authError) throw authError
+      // If email confirmation is off, Supabase returns a session immediately —
+      // respect any stored plan intent and navigate without showing the choice screen.
+      if (data.session) {
+        try {
+          const plan = localStorage.getItem(INTENDED_PLAN_KEY)
+          if (plan === 'pro') {
+            localStorage.removeItem(INTENDED_PLAN_KEY)
+            navigate('/pricing')
+            return
+          }
+        } catch {}
+      }
       setSuccess(true)
-      // If email confirmation is off, Supabase returns a session immediately.
-      // If it's on, data.session will be null until the user confirms.
       setHasSession(!!data.session)
     } catch (err) {
       setError(err.message || 'Sign up failed. Please try again.')
@@ -37,12 +47,11 @@ export default function Signup() {
   const choosePlan = (plan) => {
     setPlanChoice(plan)
     if (hasSession) {
-      // Already logged in (email confirmation disabled) — go straight there
+      try { localStorage.removeItem(INTENDED_PLAN_KEY) } catch {}
       navigate(plan === 'pro' ? '/pricing' : '/upload')
       return
     }
-    
-    try { sessionStorage.setItem(INTENDED_PLAN_KEY, plan) } catch {}
+    try { localStorage.setItem(INTENDED_PLAN_KEY, plan) } catch {}
   }
 
   return (
