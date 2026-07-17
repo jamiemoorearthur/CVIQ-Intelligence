@@ -11,6 +11,7 @@ import ResultPanel from '../components/ResultPanel'
 import { stagger } from '../utils/animations'
 import { extractCvText, filterTrulyMissing } from '../utils/filterKeywords'
 import { useAuth } from '../utils/useAuth'
+import { supabase } from '../utils/supabase'
 import '../styles/Results.css'
 
 const RESULT_KEY = 'cviq:last-result'
@@ -123,6 +124,7 @@ export default function Results() {
             {isPro && <span className="rp-pro-badge">Pro</span>}
             <button className="rp-nav-ghost" onClick={() => setChatOpen(true)}>Ask CVIQ</button>
             <button className="rp-nav-ghost" onClick={() => navigate('/upload')}>Review another CV</button>
+            <button className="rp-nav-ghost" onClick={async () => { await supabase.auth.signOut(); navigate('/') }}>Sign out</button>
           </div>
         </div>
       </nav>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Testimonials from '../components/Testimonials'
 import { useAuth } from '../utils/useAuth'
+import { supabase } from '../utils/supabase'
 import '../styles/App.css'
 
 
@@ -240,7 +241,10 @@ export default function Home() {
           </div>
           <div className="b-nav-right">
             {user ? (
-              <button className="b-btn-nav-cta" onClick={() => navigate('/upload')}>Go to upload</button>
+              <>
+                <button className="b-btn-ghost" onClick={async () => { await supabase.auth.signOut(); navigate('/') }}>Sign out</button>
+                <button className="b-btn-nav-cta" onClick={() => navigate('/upload')}>Go to upload</button>
+              </>
             ) : (
               <>
                 <button className="b-btn-ghost" onClick={() => navigate('/login')}>Log in</button>
