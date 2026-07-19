@@ -6,6 +6,8 @@ import Login from './pages/Login'
 import Signup from './pages/Signup'
 import Pricing from './pages/Pricing'
 import Return from './pages/Return'
+import Settings from './pages/Settings'
+
 
 function App() {
   return (
@@ -18,6 +20,7 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/return" element={<Return />} />
+        <Route path="/settings" element={<Settings />} />
       </Routes>
     </BrowserRouter>
   )

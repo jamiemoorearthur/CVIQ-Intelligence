@@ -25,7 +25,10 @@ function ProGate({ feature }) {
       <div className="pro-gate-icon">🔒</div>
       <div className="pro-gate-title">{feature} is a Pro feature</div>
       <p className="pro-gate-sub">Upgrade to unlock this and all other Pro features.</p>
-      <button className="pro-gate-btn" onClick={() => navigate('/pricing')}>
+      <button className="pro-gate-btn" onClick={() => {
+        try { localStorage.setItem('cviq:upgrade-return', '/results') } catch {}
+        navigate('/pricing')
+      }}>
         Upgrade to Pro — £15/mo
       </button>
     </div>
@@ -49,6 +52,7 @@ export default function Results() {
   const [showCV, setShowCV] = useState(false)
   const [chatOpen, setChatOpen] = useState(false)
   const [openCat, setOpenCat] = useState(null)
+  const [paymentSuccess, setPaymentSuccess] = useState(false)
   const { user, isPro, loading: authLoading } = useAuth()
 
   const [result] = useState(() => {
@@ -72,6 +76,14 @@ export default function Results() {
   const keywordsRef = useRef(null)
   const bulletsRef = useRef(null)
   const summaryRef = useRef(null)
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('payment') === 'success') {
+      setPaymentSuccess(true)
+      window.history.replaceState({}, '', '/results')
+    }
+  }, [])
 
   useEffect(() => {
     async function run() {
@@ -109,18 +121,28 @@ export default function Results() {
   const FreeBanner = () => !isPro ? (
     <div className="free-tier-banner">
       <span>You're on the free plan — some features are locked.</span>
-      <button onClick={() => navigate('/pricing')}>Upgrade to Pro →</button>
+      <button onClick={() => {
+        try { localStorage.setItem('cviq:upgrade-return', '/results') } catch {}
+        navigate('/pricing')
+      }}>Upgrade to Pro →</button>
     </div>
   ) : null
 
   return (
     <div className="rp">
       <FreeBanner />
+      {paymentSuccess && (
+        <div className="rp-success-banner">
+          <span>You're now on Pro. All features are unlocked.</span>
+          <button onClick={() => setPaymentSuccess(false)}>✕</button>
+        </div>
+      )}
 
       <nav className="rp-nav">
         <div className="rp-nav-inner">
           <div className="rp-logo" onClick={() => navigate('/')}>CV<span className="rp-logo-iq">IQ</span></div>
           <div className="rp-nav-right">
+            <button className="rp-nav-ghost" onClick={() => navigate('/settings')}>Settings</button>
             {isPro && <span className="rp-pro-badge">Pro</span>}
             <button className="rp-nav-ghost" onClick={() => setChatOpen(true)}>Ask CVIQ</button>
             <button className="rp-nav-ghost" onClick={() => navigate('/upload')}>Review another CV</button>

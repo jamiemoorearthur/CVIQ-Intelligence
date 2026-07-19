@@ -30,7 +30,7 @@ export default function Login() {
       if (authError) throw authError
 
       // Respect intended destination from Pricing page or signup flow
-      let dest = location.state?.from || '/upload'
+      let dest = location.state?.from || '/'
       try {
         const plan = localStorage.getItem('cviq:intended-plan')
         if (plan === 'pro') {
@@ -58,7 +58,6 @@ export default function Login() {
               CV<span className="auth-logo-accent">IQ</span>
             </span>
           </div>
-
           <Link to="/signup" className="auth-nav-link">
             Create account
           </Link>
@@ -68,9 +67,7 @@ export default function Login() {
       <div className="auth-container">
         <div className="auth-card">
           <div className="auth-eyebrow">Welcome back</div>
-
           <h1 className="auth-h1">Sign in to CVIQ</h1>
-
           <p className="auth-sub">
             Access your CV reviews and track your progress.
           </p>
@@ -87,7 +84,6 @@ export default function Login() {
               <label className="auth-label" htmlFor="email">
                 Email address
               </label>
-
               <input
                 id="email"
                 className="auth-input"
@@ -104,7 +100,6 @@ export default function Login() {
               <label className="auth-label" htmlFor="password">
                 Password
               </label>
-
               <input
                 id="password"
                 className="auth-input"
@@ -141,7 +136,6 @@ export default function Login() {
               CV<span className="auth-logo-accent">IQ</span>
             </span>
           </div>
-
           <p className="auth-page-footer-copy">
             © 2026 CVIQ Inc. · CV Intelligence Platform
           </p>

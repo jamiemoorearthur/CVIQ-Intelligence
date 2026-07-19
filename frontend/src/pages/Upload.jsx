@@ -186,6 +186,7 @@ export default function Upload() {
             <span className="up-logo-text">CV<span className="up-logo-accent">IQ</span></span>
           </div>
           <div className="up-nav-right">
+            <button className="up-back" onClick={() => navigate('/settings')}>Settings</button>
             <button className="up-back" onClick={() => navigate('/')}>← Back to home</button>
             <button className="up-nav-signout" onClick={async () => { await supabase.auth.signOut(); navigate('/') }}>Sign out</button>
           </div>

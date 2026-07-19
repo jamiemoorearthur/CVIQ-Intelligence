@@ -5,7 +5,7 @@ import '../styles/Return.css'
 
 export default function Return() {
   const navigate = useNavigate()
-  const [state, setState] = useState('loading') // 'loading' | 'error'
+  const [state, setState] = useState('loading')
   const [message, setMessage] = useState('')
 
   useEffect(() => {
@@ -21,7 +21,15 @@ export default function Return() {
     getSessionStatus(sessionId)
       .then(({ status }) => {
         if (status === 'complete') {
-          navigate('/upload?payment=success', { replace: true })
+          let returnPath = '/'
+          try {
+            const saved = localStorage.getItem('cviq:upgrade-return')
+            if (saved) {
+              returnPath = saved
+              localStorage.removeItem('cviq:upgrade-return')
+            }
+          } catch {}
+          navigate(`${returnPath}?payment=success`, { replace: true })
         } else if (status === 'open') {
           navigate('/pricing', { replace: true })
         } else {

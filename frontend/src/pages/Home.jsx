@@ -256,6 +256,7 @@ export default function Home() {
           <div className="b-nav-right">
             {user ? (
               <>
+                <button className="b-btn-ghost" onClick={() => navigate('/settings')}>Settings</button>
                 <button className="b-btn-ghost" onClick={async () => { await supabase.auth.signOut(); navigate('/') }}>Sign out</button>
                 <button className="b-btn-nav-cta" onClick={() => navigate('/upload')}>Go to upload</button>
               </>
