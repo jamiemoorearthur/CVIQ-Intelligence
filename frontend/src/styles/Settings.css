@@ -71,3 +71,13 @@
   .settings-modal { padding: 28px 20px; }
   .settings-modal-actions { flex-direction: column; }
 }
+
+/* ── Theme toggle ────────────────────────────────────── */
+.settings-theme-toggle { display: flex; gap: 6px; }
+.settings-theme-btn { background: none; border: 1px solid #e5e7eb; color: #6b7280; padding: 7px 14px; border-radius: 100px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+.settings-theme-btn:hover { border-color: #9ca3af; color: #0a1628; }
+.settings-theme-btn.active { background: #0a1628; color: #fff; border-color: #0a1628; }
+
+[data-theme="dark"] .settings-theme-btn { border-color: #1e2d45; color: #94a3b8; }
+[data-theme="dark"] .settings-theme-btn:hover { border-color: #60a5fa; color: #f1f5f9; }
+[data-theme="dark"] .settings-theme-btn.active { background: #60a5fa; color: #0a0f1a; border-color: #60a5fa; }

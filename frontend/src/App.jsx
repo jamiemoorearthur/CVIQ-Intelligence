@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { useEffect } from 'react'
 import Home from './pages/Home'
 import Upload from './pages/Upload'
 import Results from './pages/Results'
@@ -8,6 +9,10 @@ import Pricing from './pages/Pricing'
 import Return from './pages/Return'
 import Settings from './pages/Settings'
 
+// Apply theme before first render to avoid flash
+const stored = localStorage.getItem('cviq:theme')
+const systemDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches
+document.documentElement.setAttribute('data-theme', stored || (systemDark ? 'dark' : 'light'))
 
 function App() {
   return (

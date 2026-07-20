@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { supabase } from '../utils/supabase'
 import { useAuth } from '../utils/useAuth'
+import { useTheme } from '../utils/useTheme'
 import '../styles/Settings.css'
 
 const BASE_URL = 'https://cvreview-api.duckdns.org'
@@ -9,29 +10,24 @@ const BASE_URL = 'https://cvreview-api.duckdns.org'
 export default function Settings() {
   const navigate = useNavigate()
   const { user, isPro, loading: authLoading } = useAuth()
+  const { theme, setTheme } = useTheme()
   const [showModal, setShowModal] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState(null)
 
   if (authLoading) return null
-  if (!user) {
-    navigate('/login')
-    return null
-  }
+  if (!user) { navigate('/login'); return null }
 
   const handleDelete = async () => {
     try {
       setDeleting(true)
       setError(null)
-
       const { data: { session } } = await supabase.auth.getSession()
       const token = session?.access_token
-
       const res = await fetch(`${BASE_URL}/account`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       })
-
       if (res.ok) {
         await supabase.auth.signOut()
         navigate('/')
@@ -90,6 +86,38 @@ export default function Settings() {
           )}
         </div>
 
+        {/* Appearance */}
+        <div className="settings-card">
+          <div className="settings-card-label">Appearance</div>
+          <div className="settings-row">
+            <span className="settings-row-key">Theme</span>
+            <div className="settings-theme-toggle">
+              <button
+                className={`settings-theme-btn ${theme === 'light' ? 'active' : ''}`}
+                onClick={() => setTheme('light')}
+              >
+                ☀️ Light
+              </button>
+              <button
+                className={`settings-theme-btn ${theme === 'dark' ? 'active' : ''}`}
+                onClick={() => setTheme('dark')}
+              >
+                🌙 Dark
+              </button>
+              <button
+                className={`settings-theme-btn ${!['light','dark'].includes(localStorage.getItem('cviq:theme') || '') ? 'active' : ''}`}
+                onClick={() => {
+                  localStorage.removeItem('cviq:theme')
+                  const sys = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+                  setTheme(sys)
+                }}
+              >
+                💻 System
+              </button>
+            </div>
+          </div>
+        </div>
+
         {/* Danger zone */}
         <div className="settings-card settings-card-danger">
           <div className="settings-card-label settings-card-label-danger">Danger zone</div>
@@ -105,7 +133,6 @@ export default function Settings() {
         </div>
       </div>
 
-      {/* Confirmation modal */}
       {showModal && (
         <div className="settings-modal-backdrop" onClick={() => !deleting && setShowModal(false)}>
           <div className="settings-modal" onClick={e => e.stopPropagation()}>
@@ -116,18 +143,10 @@ export default function Settings() {
             </p>
             {error && <div className="settings-modal-error">{error}</div>}
             <div className="settings-modal-actions">
-              <button
-                className="settings-modal-cancel"
-                onClick={() => setShowModal(false)}
-                disabled={deleting}
-              >
+              <button className="settings-modal-cancel" onClick={() => setShowModal(false)} disabled={deleting}>
                 Cancel
               </button>
-              <button
-                className="settings-modal-confirm"
-                onClick={handleDelete}
-                disabled={deleting}
-              >
+              <button className="settings-modal-confirm" onClick={handleDelete} disabled={deleting}>
                 {deleting ? 'Deleting…' : 'Delete account'}
               </button>
             </div>
