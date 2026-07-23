@@ -90,10 +90,11 @@ def test_threshold_drops_distant_chunks():
 
     with patch("app.rag.retriever.get_collection", return_value=collection):
         with patch("app.rag.retriever.embed_single", return_value=_unit(0)):
-            results = retrieve_context("any query", n_results=2)
+            results, is_weak = retrieve_context("any query", n_results=2)
 
     assert "relevant chunk" in results
     assert "irrelevant chunk" not in results
+    assert is_weak is True
 
 
 def test_threshold_keeps_all_close_chunks():
@@ -104,9 +105,10 @@ def test_threshold_keeps_all_close_chunks():
 
     with patch("app.rag.retriever.get_collection", return_value=collection):
         with patch("app.rag.retriever.embed_single", return_value=_unit(0)):
-            results = retrieve_context("any query", n_results=3)
+            results, is_weak = retrieve_context("any query", n_results=3)
 
     assert len(results) == 3
+    assert is_weak is False
 
 
 def test_threshold_returns_empty_when_all_filtered():
@@ -117,9 +119,10 @@ def test_threshold_returns_empty_when_all_filtered():
 
     with patch("app.rag.retriever.get_collection", return_value=collection):
         with patch("app.rag.retriever.embed_single", return_value=_unit(0)):
-            results = retrieve_context("any query", n_results=2)
+            results, is_weak = retrieve_context("any query", n_results=2)
 
     assert results == []
+    assert is_weak is True
 
 
 def test_threshold_value_is_not_changed():
