@@ -3,6 +3,7 @@ import logging
 from app.core.config import settings
 from app.rag.retriever import retrieve_context
 from app.rag.generator import generate_review
+from app.research.agent import run_research_agent
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +42,13 @@ def run_review_pipeline(cv_text: str, job_description: str, tier: str = "paid") 
         trace = None
 
     query = f"{cv_text[:1000]}\n\n{job_description[:500]}"
-    context_chunks = retrieve_context(query, n_results=6, trace=trace)
+    context_chunks, is_weak = retrieve_context(query, n_results=6, trace=trace)
+
+    if is_weak:
+        research_chunks = run_research_agent(job_description)
+        if research_chunks:
+            context_chunks = research_chunks + context_chunks
+
     result = generate_review(cv_text, job_description, context_chunks, trace=trace, tier=tier)
 
     total_ms = (time.perf_counter() - t0) * 1000

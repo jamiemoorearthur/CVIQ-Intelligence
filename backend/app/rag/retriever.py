@@ -6,7 +6,12 @@ KNOWLEDGE_BASE_COLLECTION = "knowledge_base"
 RELEVANCE_THRESHOLD = 0.8
 
 
-def retrieve_context(query: str, n_results: int = 6, trace=None) -> list[str]:
+def retrieve_context(query: str, n_results: int = 6, trace=None) -> tuple[list[str], bool]:
+    """
+    Returns (chunks, is_weak).
+    is_weak=True when more than half the chunks are dropped or fewer than 2 survive —
+    this signals the research agent to fetch external context.
+    """
     t0 = time.perf_counter()
     span = trace.span(name="retrieval") if trace else None
 
@@ -16,6 +21,7 @@ def retrieve_context(query: str, n_results: int = 6, trace=None) -> list[str]:
 
     filtered = [c for c, d in zip(chunks, distances) if d <= RELEVANCE_THRESHOLD]
     dropped = len(chunks) - len(filtered)
+    is_weak = dropped > n_results // 2 or len(filtered) < 2
     elapsed_ms = (time.perf_counter() - t0) * 1000
 
     if dropped:
@@ -25,7 +31,7 @@ def retrieve_context(query: str, n_results: int = 6, trace=None) -> list[str]:
         )
     print(
         f"[retrieval] chunks={len(chunks)} kept={len(filtered)} "
-        f"latency={elapsed_ms:.0f}ms"
+        f"weak={is_weak} latency={elapsed_ms:.0f}ms"
     )
 
     if span:
@@ -33,6 +39,7 @@ def retrieve_context(query: str, n_results: int = 6, trace=None) -> list[str]:
             "chunks_retrieved": len(chunks),
             "chunks_after_threshold": len(filtered),
             "chunks_dropped": dropped,
+            "is_weak": is_weak,
         }, metadata={"latency_ms": round(elapsed_ms)})
 
-    return filtered
+    return filtered, is_weak

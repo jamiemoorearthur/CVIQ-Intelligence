@@ -23,6 +23,10 @@ class Settings(BaseSettings):
 
     stripe_webhook_secret: str = ""
 
+    # Research agent
+    tavily_api_key: str = ""
+    anthropic_api_key: str = ""
+
     ollama_base_url: str = "http://localhost:11434/v1"
     ollama_model: str = "llama3.1:8b"
 
