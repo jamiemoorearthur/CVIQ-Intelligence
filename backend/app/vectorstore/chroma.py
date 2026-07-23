@@ -53,10 +53,14 @@ def query_collection(
     collection: chromadb.Collection,
     query_embedding: list[float],
     n_results: int = 5,
+    where: dict | None = None,
 ) -> tuple[list[str], list[float]]:
-    results = collection.query(
+    kwargs: dict = dict(
         query_embeddings=[query_embedding],
         n_results=n_results,
         include=["documents", "distances"],
     )
+    if where:
+        kwargs["where"] = where
+    results = collection.query(**kwargs)
     return results["documents"][0], results["distances"][0]

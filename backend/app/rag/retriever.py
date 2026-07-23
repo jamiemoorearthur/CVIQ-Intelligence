@@ -6,6 +6,21 @@ KNOWLEDGE_BASE_COLLECTION = "knowledge_base"
 RELEVANCE_THRESHOLD = 0.8
 
 
+def retrieve_company_chunks(company: str, n_results: int = 3) -> list[str]:
+    """Return KB chunks written by the research agent for a specific company."""
+    try:
+        collection = get_collection(KNOWLEDGE_BASE_COLLECTION)
+        results = collection.get(
+            where={"company": {"$eq": company.lower()}},
+            limit=n_results,
+            include=["documents"],
+        )
+        return results["documents"] or []
+    except Exception as e:
+        print(f"[retrieval] company metadata fetch failed: {e}")
+        return []
+
+
 def retrieve_context(query: str, n_results: int = 6, trace=None) -> tuple[list[str], bool]:
     """
     Returns (chunks, is_weak).

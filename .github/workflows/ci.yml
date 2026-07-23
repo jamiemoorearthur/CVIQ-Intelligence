@@ -62,7 +62,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.ORACLE_SSH_PRIVATE_KEY }}
           script: |
-            cd ~/Resume-Review-Engine && git pull
+            cd ~/Resume-Review-Engine && git fetch origin && git reset --hard origin/main
             cd backend && docker build -t cv-reviewer .
             docker stop cv-reviewer cviq-api || true
             docker rm cv-reviewer cviq-api || true
