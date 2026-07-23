@@ -84,7 +84,7 @@ function ScoreDemo() {
               {recruiter}<span className="b-demo-score-denom">/10</span>
             </div>
             <div className="b-demo-track">
-              <div className="b-demo-fill" style={{ width: `${recruiter * 10}%`, background: col(recruiter, 7) }} />
+              <div className="b-demo-fill" style={{ '--fill': recruiter / 10, background: col(recruiter, 7) }} />
             </div>
           </div>
           <div className="b-demo-score-cell">
