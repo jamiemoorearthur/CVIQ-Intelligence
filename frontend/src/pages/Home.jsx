@@ -392,7 +392,7 @@ export default function Home() {
       <section className="b-section b-features reveal" id="features">
         <div className="b-section-head">
           <div className="b-label">What you get</div>
-          <h2 className="b-h2">From upload to<br />offer-ready.</h2>
+          <h2 className="b-h2">From upload to<br />offer ready.</h2>
           <p className="b-section-sub">Every tool you need to compete for the role.</p>
         </div>
         <div className="b-features-grid">
