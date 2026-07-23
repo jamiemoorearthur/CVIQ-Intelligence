@@ -1,0 +1,335 @@
+/* ==========================================================================
+   Polished nav — unified design across all pages
+   Consistent colour, transitions, responsive behaviour
+   ========================================================================== */
+
+/* ── Shared nav tokens ───────────────────────────────── */
+:root {
+   --nav-height: 64px;
+   --nav-px: 56px;
+   --nav-bg: rgba(255,255,255,0.9);
+   --nav-border: rgba(0,0,0,0.07);
+   --nav-shadow: 0 1px 0 rgba(0,0,0,0.04);
+   --nav-text: #475569;
+   --nav-text-hover: #0a1628;
+   --nav-btn-border: #e2e8f0;
+   --nav-btn-hover-bg: #f8fafc;
+   --nav-btn-hover-border: #cbd5e1;
+ }
+ 
+ [data-theme="dark"] {
+   --nav-bg: rgba(10,15,26,0.92);
+   --nav-border: rgba(255,255,255,0.07);
+   --nav-shadow: 0 1px 0 rgba(255,255,255,0.03);
+   --nav-text: #94a3b8;
+   --nav-text-hover: #f1f5f9;
+   --nav-btn-border: rgba(255,255,255,0.1);
+   --nav-btn-hover-bg: rgba(255,255,255,0.06);
+   --nav-btn-hover-border: rgba(255,255,255,0.18);
+ }
+ 
+ /* ── Logo — same across all pages ────────────────────── */
+ .b-logo-text,
+ .up-logo-text,
+ .auth-logo-text,
+ .settings-logo,
+ .pricing-logo {
+   font-size: 20px;
+   font-weight: 800;
+   letter-spacing: -0.8px;
+   color: #0a1628;
+   white-space: nowrap;
+ }
+ 
+ [data-theme="dark"] .b-logo-text,
+ [data-theme="dark"] .up-logo-text,
+ [data-theme="dark"] .auth-logo-text,
+ [data-theme="dark"] .settings-logo,
+ [data-theme="dark"] .pricing-logo { color: #f1f5f9; }
+ 
+ .b-logo-accent,
+ .up-logo-accent,
+ .auth-logo-accent,
+ .settings-logo-accent,
+ .pricing-logo-accent {
+   background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+   -webkit-background-clip: text;
+   -webkit-text-fill-color: transparent;
+   background-clip: text;
+ }
+ 
+ /* ── Shared nav structure ────────────────────────────── */
+ .b-nav,
+ .up-nav,
+ .auth-nav,
+ .pricing-nav {
+   height: var(--nav-height);
+   padding: 0 var(--nav-px);
+   background: var(--nav-bg);
+   backdrop-filter: blur(20px);
+   -webkit-backdrop-filter: blur(20px);
+   border-bottom: 1px solid var(--nav-border);
+   box-shadow: var(--nav-shadow);
+   position: sticky;
+   top: 0;
+   z-index: 100;
+   display: flex;
+   align-items: center;
+ }
+ 
+ .settings-nav {
+   height: var(--nav-height);
+   padding: 0 var(--nav-px);
+   background: var(--nav-bg);
+   backdrop-filter: blur(20px);
+   -webkit-backdrop-filter: blur(20px);
+   border-bottom: 1px solid var(--nav-border);
+   box-shadow: var(--nav-shadow);
+   position: sticky;
+   top: 0;
+   z-index: 100;
+   display: flex;
+   align-items: center;
+ }
+ 
+ .settings-nav-inner {
+   width: 100%;
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+ }
+ 
+ /* ── Results nav ─────────────────────────────────────── */
+ .rp-nav {
+   height: var(--nav-height);
+   background: var(--nav-bg);
+   backdrop-filter: blur(20px);
+   -webkit-backdrop-filter: blur(20px);
+   border-bottom: 1px solid var(--nav-border);
+   box-shadow: var(--nav-shadow);
+ }
+ 
+ .rp-nav-inner {
+   max-width: 1640px;
+   margin: 0 auto;
+   padding: 0 var(--nav-px);
+   height: 100%;
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   gap: 12px;
+ }
+ 
+ .rp-logo {
+   font-size: 20px;
+   font-weight: 800;
+   letter-spacing: -0.8px;
+   color: #0a1628;
+   cursor: pointer;
+   white-space: nowrap;
+   flex-shrink: 0;
+ }
+ 
+ [data-theme="dark"] .rp-logo { color: #f1f5f9; }
+ 
+ .rp-logo-iq {
+   background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+   -webkit-background-clip: text;
+   -webkit-text-fill-color: transparent;
+   background-clip: text;
+ }
+ 
+ .rp-nav-right {
+   display: flex;
+   align-items: center;
+   gap: 8px;
+   flex-wrap: nowrap;
+   flex-shrink: 0;
+ }
+ 
+ /* ── Home nav links ──────────────────────────────────── */
+ .b-nav-inner {
+   width: 100%;
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   gap: 16px;
+ }
+ 
+ .b-nav-links {
+   display: flex;
+   gap: 32px;
+   position: absolute;
+   left: 50%;
+   transform: translateX(-50%);
+ }
+ 
+ .b-nav-links a {
+   font-size: 13.5px;
+   font-weight: 500;
+   color: var(--nav-text);
+   text-decoration: none;
+   position: relative;
+   padding-bottom: 2px;
+   transition: color 0.2s ease;
+   white-space: nowrap;
+ }
+ 
+ .b-nav-links a::after {
+   content: '';
+   position: absolute;
+   bottom: -2px;
+   left: 0;
+   width: 0;
+   height: 1.5px;
+   background: #2563eb;
+   border-radius: 999px;
+   transition: width 0.2s ease;
+ }
+ 
+ .b-nav-links a:hover { color: var(--nav-text-hover); }
+ .b-nav-links a:hover::after { width: 100%; }
+ 
+ /* ── Shared ghost button — same on every page ────────── */
+ .b-btn-ghost,
+ .up-back,
+ .up-nav-signout,
+ .auth-nav-link,
+ .settings-nav-btn,
+ .rp-nav-ghost {
+   background: transparent;
+   border: 1px solid var(--nav-btn-border);
+   color: var(--nav-text);
+   padding: 7px 15px;
+   border-radius: 999px;
+   font-size: 13px;
+   font-weight: 500;
+   cursor: pointer;
+   font-family: inherit;
+   transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+   white-space: nowrap;
+   text-decoration: none;
+   display: inline-flex;
+   align-items: center;
+   box-shadow: none;
+ }
+ 
+ .b-btn-ghost:hover,
+ .up-back:hover,
+ .auth-nav-link:hover,
+ .settings-nav-btn:hover,
+ .rp-nav-ghost:hover {
+   background: var(--nav-btn-hover-bg);
+   border-color: var(--nav-btn-hover-border);
+   color: var(--nav-text-hover);
+   transform: none;
+ }
+ 
+ /* Sign out turns red on hover */
+ .up-nav-signout:hover {
+   background: #fef2f2;
+   border-color: #fca5a5;
+   color: #dc2626;
+ }
+ 
+ [data-theme="dark"] .up-nav-signout:hover {
+   background: rgba(239,68,68,0.1);
+   border-color: #7f1d1d;
+   color: #f87171;
+ }
+ 
+ /* ── Primary CTA ─────────────────────────────────────── */
+ .b-btn-nav-cta {
+   background: #0a1628;
+   color: #fff;
+   padding: 8px 18px;
+   border-radius: 999px;
+   font-size: 13.5px;
+   font-weight: 600;
+   border: none;
+   cursor: pointer;
+   font-family: inherit;
+   transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+   white-space: nowrap;
+   letter-spacing: -0.1px;
+   box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+ }
+ 
+ .b-btn-nav-cta:hover {
+   background: #1e293b;
+   box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+   transform: translateY(-1px);
+ }
+ 
+ .b-btn-nav-cta:active { transform: translateY(0); }
+ 
+ [data-theme="dark"] .b-btn-nav-cta { background: #f1f5f9; color: #0a1628; }
+ [data-theme="dark"] .b-btn-nav-cta:hover { background: #fff; }
+ 
+ /* ── Responsive ──────────────────────────────────────── */
+ 
+ /* Hide centred links before they overlap the logo/buttons */
+ @media (max-width: 1000px) {
+   .b-nav-links {
+     display: none;
+     position: static;
+     transform: none;
+   }
+   .b-nav-links.open {
+     display: flex;
+     flex-direction: column;
+     position: fixed;
+     top: var(--nav-height);
+     left: 0;
+     right: 0;
+     background: var(--nav-bg);
+     backdrop-filter: blur(20px);
+     border-bottom: 1px solid var(--nav-border);
+     padding: 20px 28px;
+     gap: 18px;
+     z-index: 99;
+     box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+   }
+   .b-burger { display: flex; }
+ }
+ 
+ /* Tighten padding at medium widths */
+ @media (max-width: 900px) {
+   :root { --nav-px: 28px; }
+ 
+   .b-nav-right,
+   .rp-nav-right { gap: 6px; }
+ 
+   .b-btn-ghost,
+   .up-back,
+   .up-nav-signout,
+   .auth-nav-link,
+   .settings-nav-btn,
+   .rp-nav-ghost {
+     padding: 6px 11px;
+     font-size: 12.5px;
+   }
+ 
+   .b-btn-nav-cta {
+     padding: 7px 13px;
+     font-size: 12.5px;
+   }
+ }
+ 
+ /* Mobile — minimal nav */
+ @media (max-width: 640px) {
+   :root { --nav-px: 16px; }
+ 
+   .b-logo-text,
+   .up-logo-text,
+   .auth-logo-text,
+   .settings-logo,
+   .pricing-logo,
+   .rp-logo { font-size: 17px; }
+ 
+   /* Results nav — hide less critical buttons */
+   .rp-nav-right .rp-nav-ghost:first-child { display: none; }
+ 
+   /* Upload nav — hide Settings button */
+   .up-nav-right .up-back:first-child { display: none; }
+ }

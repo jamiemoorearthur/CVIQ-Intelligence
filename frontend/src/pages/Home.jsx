@@ -250,7 +250,6 @@ export default function Home() {
           <div className={`b-nav-links ${menuOpen ? 'open' : ''}`}>
             <a href="#how-it-works">How it works</a>
             <a href="#features">Features</a>
-            <a href="#team">Team</a>
             <a href="#pricing">Pricing</a>
           </div>
           <div className="b-nav-right">
@@ -301,10 +300,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── CV Before/After ── */}
-      <CVBeforeAfter />
-
-      {/* ── How it works ── */}
+      {/* ── How it works (3-step process — moved to top per advisor feedback) ── */}
       <section className="b-section b-hiw reveal" id="how-it-works">
         <div className="b-blob b-blob-right" />
         <div className="b-section-head">
@@ -389,6 +385,9 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── CV Before/After ── */}
+      <CVBeforeAfter />
+
       {/* ── Features ── */}
       <section className="b-section b-features reveal" id="features">
         <div className="b-section-head">
@@ -413,76 +412,54 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── Team ── */}
-      <section className="b-section b-team reveal" id="team">
-        <div className="b-blob b-blob-left" />
-        <div className="b-section-head">
-          <div className="b-label">The team</div>
-          <h2 className="b-h2">Built by people who<br />understand hiring.</h2>
-          <p className="b-section-sub">A small team fixing the broken job application process.</p>
-        </div>
-        <div className="b-team-cards">
-          {[
-            { name: 'Jamie Moore-Arthur', role: 'Founder & CEO', colour: '#1d4ed8', initial: 'J', bio: 'Product engineer. Manages backend systems, knowledge base content, and infrastructure support.' },
-            { name: 'Oluwaseyi Bello', role: 'Co-Founder & Lead AI Platform Engineer', colour: '#0f6e56', initial: 'S', bio: 'Built the full AI platform including the RAG pipeline, embeddings, vector store, and all API endpoints. Also built and owns the entire infrastructure from scratch including Docker, Terraform, Kubernetes, Oracle Cloud deployment, and the CI/CD pipeline.' },
-            { name: 'Rochelle Smith', role: 'Head of UI/UX & Frontend Engineering', colour: '#6366f1', initial: 'R', bio: 'Frontend engineer responsible for the product UI, design system, and user experience across the app.' },
-            { name: 'Sade Smith', role: 'Head of UI/UX & Frontend Engineering', colour: '#a855f7', initial: 'S', bio: 'Frontend engineer responsible for the product UI, design system, and user experience across the app.' },
-          ].map((m, i) => (
-            <div key={i} className="b-team-card reveal" style={{ transitionDelay: `${i * 0.1}s` }}>
-              <div className="b-team-avatar" style={{ background: m.colour }}>{m.initial}</div>
-              <div className="b-team-name">{m.name}</div>
-              <div className="b-team-role">{m.role}</div>
-              <p className="b-team-bio">{m.bio}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+{/* ── Pricing ── */}
+<section className="b-section b-pricing reveal" id="pricing">
+  <div className="b-section-head">
+    <div className="b-label">Pricing</div>
+    <h2 className="b-h2">Start free.<br />Upgrade when you're ready.</h2>
+    <p className="b-section-sub">No credit card required to get started.</p>
+  </div>
 
-      {/* ── Pricing ── */}
-      <section className="b-section b-pricing reveal" id="pricing">
-        <div className="b-section-head">
-          <div className="b-label">Pricing</div>
-          <h2 className="b-h2">Start free.<br />Upgrade when you're ready.</h2>
-          <p className="b-section-sub">No credit card required to get started.</p>
-        </div>
-        <div className="b-pricing-cards">
-          <div className="b-pricing-card reveal">
-            <div className="b-pricing-tier">Basic</div>
-            <div className="b-pricing-price">Free</div>
-            <div className="b-pricing-desc">For job seekers getting started</div>
-            <ul className="b-pricing-list">
-              <li className="b-pricing-yes">5 CV reviews per month</li>
-              <li className="b-pricing-yes">ATS score & keyword gaps</li>
-              <li className="b-pricing-yes">Recruiter feedback score</li>
-              <li className="b-pricing-yes">Bullet rewrite suggestions</li>
-              <li className="b-pricing-no">CV download</li>
-              <li className="b-pricing-no">AI-rewritten CV</li>
-            </ul>
-            <button className="b-btn-outline-full" onClick={() => {
-              if (user) { navigate('/pricing') }
-              else { try { localStorage.setItem('cviq:intended-plan', 'pro') } catch {}; navigate('/signup') }
-            }}>Start Pro — £15/mo</button>
-          </div>
-          <div className="b-pricing-card b-pricing-pro reveal" style={{ transitionDelay: '0.1s' }}>
-            <div className="b-pricing-badge">Most popular</div>
-            <div className="b-pricing-tier">Pro</div>
-            <div className="b-pricing-price">£15<span>/mo</span></div>
-            <div className="b-pricing-desc">For serious applicants</div>
-            <ul className="b-pricing-list">
-              <li className="b-pricing-yes">Unlimited CV reviews</li>
-              <li className="b-pricing-yes">ATS score & keyword gaps</li>
-              <li className="b-pricing-yes">Recruiter feedback score</li>
-              <li className="b-pricing-yes">Bullet rewrite suggestions</li>
-              <li className="b-pricing-yes">Download improved CV (.docx & PDF)</li>
-              <li className="b-pricing-yes">Full AI-rewritten CV</li>
-            </ul>
-            <button className="b-btn-primary-full" onClick={() => {
-              if (user) { navigate('/pricing') }
-              else { try { localStorage.setItem('cviq:intended-plan', 'pro') } catch {}; navigate('/signup') }
-            }}>Start Pro — £15/mo</button>
-          </div>
-        </div>
-      </section>
+  <div className="b-pricing-cards">
+    <div className="b-pricing-card reveal">
+      <div className="b-pricing-tier">Free</div>
+      <div className="b-pricing-price">£0<span>/mo</span></div>
+      <div className="b-pricing-desc">For job seekers getting started</div>
+      <ul className="b-pricing-list">
+        <li className="b-pricing-yes">CV score & ATS check</li>
+        <li className="b-pricing-yes">Recruiter assessment</li>
+        <li className="b-pricing-yes">Missing keyword detection</li>
+        <li className="b-pricing-yes">Action plan & recommendations</li>
+        <li className="b-pricing-no">AI bullet rewrites</li>
+        <li className="b-pricing-no">CV editor & download</li>
+      </ul>
+      <button className="b-btn-outline-full" onClick={() => user ? navigate('/upload') : navigate('/signup')}>
+        Get started free
+      </button>
+    </div>
+
+    <div className="b-pricing-card b-pricing-pro reveal" style={{ transitionDelay: '0.1s' }}>
+      <div className="b-pricing-badge">Most popular</div>
+      <div className="b-pricing-tier">Pro</div>
+      <div className="b-pricing-price">£15<span>/mo</span></div>
+      <div className="b-pricing-desc">For long-term users</div>
+      <ul className="b-pricing-list">
+        <li className="b-pricing-yes">Everything in Free</li>
+        <li className="b-pricing-yes">AI bullet point rewrites</li>
+        <li className="b-pricing-yes">Line-by-line feedback</li>
+        <li className="b-pricing-yes">AI profile summary rewrite</li>
+        <li className="b-pricing-yes">CV editor with suggestions</li>
+        <li className="b-pricing-yes">Unlimited Ask CVIQ chat</li>
+      </ul>
+      <button className="b-btn-primary-full" onClick={() => {
+        if (user) { navigate('/pricing') }
+        else { try { localStorage.setItem('cviq:intended-plan', 'pro') } catch {}; navigate('/signup') }
+      }}>
+        Start Pro - £15/mo →
+      </button>
+    </div>
+  </div>
+</section>
 
       {/* ── Testimonials ── */}
       <Testimonials />
@@ -506,10 +483,9 @@ export default function Home() {
           <div className="b-footer-links">
             <a href="#how-it-works">How it works</a>
             <a href="#features">Features</a>
-            <a href="#team">Team</a>
             <a href="#pricing">Pricing</a>
           </div>
-          <p className="b-footer-copy">© 2026 CVIQ Inc. · CV Intelligence · Built with FastAPI, React & GPT-4o</p>
+          <p className="b-footer-copy">© 2026 CVIQ Inc. · CV Intelligence ·</p>
         </div>
       </footer>
     </div>

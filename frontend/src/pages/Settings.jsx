@@ -15,6 +15,11 @@ export default function Settings() {
   const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState(null)
 
+  const [showCancelModal, setShowCancelModal] = useState(false)
+  const [cancelling, setCancelling] = useState(false)
+  const [cancelError, setCancelError] = useState(null)
+  const [cancelSuccess, setCancelSuccess] = useState(false)
+
   if (authLoading) return null
   if (!user) { navigate('/login'); return null }
 
@@ -39,6 +44,38 @@ export default function Settings() {
       setError('Something went wrong. Please try again or contact support.')
       setDeleting(false)
     }
+  }
+
+  // NOTE: /cancel-subscription does not exist on the backend yet — this is stubbed
+  // to match the same fetch pattern as handleDelete above. Once the endpoint is
+  // built, the URL/method below should be the only thing that needs to change.
+  const handleCancelSubscription = async () => {
+    try {
+      setCancelling(true)
+      setCancelError(null)
+      const { data: { session } } = await supabase.auth.getSession()
+      const token = session?.access_token
+      const res = await fetch(`${BASE_URL}/cancel-subscription`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (res.ok) {
+        setCancelSuccess(true)
+        setCancelling(false)
+      } else {
+        setCancelError('Something went wrong. Please try again or contact support.')
+        setCancelling(false)
+      }
+    } catch {
+      setCancelError('Something went wrong. Please try again or contact support.')
+      setCancelling(false)
+    }
+  }
+
+  const closeCancelModal = () => {
+    setShowCancelModal(false)
+    setCancelError(null)
+    setCancelSuccess(false)
   }
 
   return (
@@ -81,6 +118,13 @@ export default function Settings() {
             <div className="settings-upgrade-row">
               <button className="settings-upgrade-btn" onClick={() => navigate('/pricing')}>
                 Upgrade to Pro — £15/mo
+              </button>
+            </div>
+          )}
+          {isPro && (
+            <div className="settings-upgrade-row">
+              <button className="settings-cancel-sub-btn" onClick={() => setShowCancelModal(true)}>
+                Cancel subscription
               </button>
             </div>
           )}
@@ -150,6 +194,44 @@ export default function Settings() {
                 {deleting ? 'Deleting…' : 'Delete account'}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {showCancelModal && (
+        <div className="settings-modal-backdrop" onClick={() => !cancelling && closeCancelModal()}>
+          <div className="settings-modal" onClick={e => e.stopPropagation()}>
+            {cancelSuccess ? (
+              <>
+                <div className="settings-modal-icon">✅</div>
+                <h2 className="settings-modal-title">Subscription cancelled</h2>
+                <p className="settings-modal-body">
+                  Your Pro subscription has been cancelled. You'll keep access to Pro features until the end of your current billing period.
+                </p>
+                <div className="settings-modal-actions">
+                  <button className="settings-modal-confirm" onClick={closeCancelModal}>
+                    Done
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="settings-modal-icon">⚠️</div>
+                <h2 className="settings-modal-title">Cancel your subscription?</h2>
+                <p className="settings-modal-body">
+                  You'll keep access to Pro features until the end of your current billing period. After that, your account will move to the Free plan.
+                </p>
+                {cancelError && <div className="settings-modal-error">{cancelError}</div>}
+                <div className="settings-modal-actions">
+                  <button className="settings-modal-cancel" onClick={closeCancelModal} disabled={cancelling}>
+                    Keep subscription
+                  </button>
+                  <button className="settings-modal-confirm" onClick={handleCancelSubscription} disabled={cancelling}>
+                    {cancelling ? 'Cancelling…' : 'Cancel subscription'}
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}

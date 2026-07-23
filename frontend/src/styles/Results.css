@@ -38,54 +38,11 @@
 /* ==========================================================================
    Navigation
    ========================================================================== */
-.rp-nav {
-  position: sticky;
-  top: 0;
-  z-index: 40;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--border);
-}
 
-.rp-nav-inner {
-  max-width: var(--max-w);
-  margin: 0 auto;
-  padding: 14px 28px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.rp-logo {
-  font-family: var(--font-display);
-  font-size: 24px;
-  font-weight: 400;
-  color: var(--dark);
-  cursor: pointer;
-  letter-spacing: -0.01em;
-}
-.rp-logo-iq { color: var(--blue); }
 
 .rp-nav-right { display: flex; align-items: center; gap: 8px; }
 
-.rp-nav-ghost {
-  font-family: var(--font-body);
-  font-size: 13.5px;
-  font-weight: 600;
-  color: var(--dark);
-  background: transparent;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 8px 16px;
-  cursor: pointer;
-  transition: border-color 0.2s ease, background 0.2s ease, transform 0.15s ease;
-}
-.rp-nav-ghost:hover {
-  border-color: var(--blue);
-  background: var(--blue-glow-soft);
-  transform: translateY(-1px);
-}
+
 
 /* ==========================================================================
    Page layout
